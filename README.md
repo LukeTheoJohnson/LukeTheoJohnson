@@ -19,6 +19,7 @@
 
 ### Featured
 - **[agentic-ds](https://github.com/LukeTheoJohnson/agentic-ds)** — Claude Code skills that make AI agents do data science with a real data scientist's discipline. 14 eval-backed failure-mode guardrails (leakage, baselines, stats, SQL grain); augmentation lifts the planted-failure catch rate 39/42 → 42/42.
+- **[thing-explainer](https://github.com/LukeTheoJohnson/thing-explainer)** — Explain anything using only the 1,000 most common English words (Munroe's *Thing Explainer* / Up Goer Five). The vocabulary limit is a hard rule a checker enforces, not the model's goodwill — draft → check → fix flagged words → repeat until it passes.
 
 ### Open Source
 - **[polars](https://github.com/pola-rs/polars)** — fix reflected `Series` arithmetic operand order ([#27971](https://github.com/pola-rs/polars/pull/27971))
