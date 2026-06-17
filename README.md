@@ -28,6 +28,14 @@
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** — Windows path-handling & session-search fixes, plus a real-Windows CI runner ([#3274](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3274), [#3276](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3276), [#3279](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3279))
 - **[printing-press-library](https://github.com/mvanhorn/printing-press-library)** — add FRED economic-data CLI ([#1178](https://github.com/mvanhorn/printing-press-library/pull/1178))
 
+- ## 🐍 Contribution Snake
+
+<div align="center">
+
+![Snake animation](https://raw.githubusercontent.com/Yeachan-Heo/Yeachan-Heo/output/github-contribution-grid-snake-dark.svg)
+
+</div>
+
 <div align="center">
 
 [![Stats](https://github-readme-stats.vercel.app/api?username=LukeTheoJohnson&show_icons=true&theme=tokyonight&hide_border=true&count_private=true&hide_rank=true)](https://github.com/LukeTheoJohnson)
