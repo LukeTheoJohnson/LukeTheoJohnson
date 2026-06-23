@@ -18,7 +18,6 @@
 </div>
 
 ### Featured
-- **[agentic-ds](https://github.com/LukeTheoJohnson/agentic-ds)** — Claude Code skills that make AI agents do data science
 - **[thing-explainer](https://github.com/LukeTheoJohnson/thing-explainer)** — Explain anything using only the 1,000 most common English words
 - **[trove](https://github.com/LukeTheoJohnson/trove)** — Unified personal price & listing intelligence framework (shared core, per-source drivers)
 
