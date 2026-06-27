@@ -1,4 +1,4 @@
-name: agentic-ds-widget
+name: profile-widget
 
 on:
   schedule:
@@ -27,7 +27,6 @@ jobs:
       - name: Generate widget
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python agent/generate.py
 
       - name: Commit if changed
@@ -38,6 +37,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "no change"
           else
-            git commit -m "chore: refresh agentic-ds widget"
+            git commit -m "chore: refresh profile widget"
             git push
           fi
