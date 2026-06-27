@@ -18,15 +18,19 @@
 </div>
 
 ### Featured
+<!-- FEATURED:START -->
 - **[thing-explainer](https://github.com/LukeTheoJohnson/thing-explainer)** — Explain anything using only the 1,000 most common English words
 - **[trove](https://github.com/LukeTheoJohnson/trove)** — Unified personal price & listing intelligence framework (shared core, per-source drivers)
+<!-- FEATURED:END -->
 
-### Open Source
-- **[polars](https://github.com/pola-rs/polars)** — fix reflected `Series` arithmetic operand order ([#27971](https://github.com/pola-rs/polars/pull/27971))
-- **[statsmodels](https://github.com/statsmodels/statsmodels)** — skip summary diagnostics when `slim=True` ([#9844](https://github.com/statsmodels/statsmodels/pull/9844))
-- **[seaborn](https://github.com/mwaskom/seaborn)** — respect `common_norm` for the density stat in `so.Hist` ([#3946](https://github.com/mwaskom/seaborn/pull/3946))
+### Open Source — merged upstream
+<!-- OSS:START -->
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** — Windows path-handling & session-search fixes, plus a real-Windows CI runner ([#3274](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3274), [#3276](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3276), [#3279](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3279), [#3297](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3297), [#3300](https://github.com/Yeachan-Heo/oh-my-claudecode/pull/3300))
-- **[printing-press-library](https://github.com/mvanhorn/printing-press-library)** — add FRED economic-data CLI, fix library gitignore for MCP source dirs ([#1178](https://github.com/mvanhorn/printing-press-library/pull/1178), [#1257](https://github.com/mvanhorn/printing-press-library/pull/1257))
+- **[printing-press-library](https://github.com/mvanhorn/printing-press-library)** — FRED economic-data CLI (+ `--csv` fix) & library gitignore fix for MCP source dirs ([#1178](https://github.com/mvanhorn/printing-press-library/pull/1178), [#1257](https://github.com/mvanhorn/printing-press-library/pull/1257), [#1307](https://github.com/mvanhorn/printing-press-library/pull/1307))
+- **[statsmodels](https://github.com/statsmodels/statsmodels)** — skip summary diagnostics when `slim=True` ([#9844](https://github.com/statsmodels/statsmodels/pull/9844))
+<!-- OSS:END -->
+
+<sub><b>In review (upstream):</b> <a href="https://github.com/pola-rs/polars/pull/27971">polars #27971</a> · <a href="https://github.com/mwaskom/seaborn/pull/3946">seaborn #3946</a> · <a href="https://github.com/narwhals-dev/narwhals/pull/3689">narwhals #3689</a> · <a href="https://github.com/CamDavidsonPilon/lifelines/pull/1687">lifelines #1687</a> · <a href="https://github.com/plotly/plotly.py/pull/5633">plotly.py #5633</a></sub>
 
 <div align="center">
 
