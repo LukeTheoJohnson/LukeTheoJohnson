@@ -1,4 +1,4 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:2ac3de,30:7aa2f7,65:bb9af7,100:9d7cd8&height=180&section=header&text=Luke%20Johnson&fontSize=70&fontColor=ffffff&animation=fadeIn" width="100%"/>
+<!-- <img src="https://capsule-render.vercel.app/api?type=waving&color=0:2ac3de,30:7aa2f7,65:bb9af7,100:9d7cd8&height=180&section=header&text=Luke%20Johnson&fontSize=70&fontColor=ffffff&animation=fadeIn" width="100%"/> -->
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude_API-d97706?style=for-the-badge&logo=anthropic&logoColor=white)
