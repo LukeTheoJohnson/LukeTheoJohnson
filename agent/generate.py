@@ -136,7 +136,7 @@ def commit_days(repo: str, days: int = HEAT_DAYS) -> list[int]:
 
 
 # ── my own public projects (non-fork repos I push to) ────────────────────────
-def collect_projects(limit: int = 2) -> list[dict]:
+def collect_projects(limit: int = 4) -> list[dict]:
     try:
         repos = gh(f"/users/{USER}/repos?sort=pushed&per_page=100")
     except (urllib.error.URLError, urllib.error.HTTPError) as e:
@@ -250,7 +250,7 @@ def heat_color(n: int) -> str:
 
 
 def render_svg(projects: list[dict], c: dict) -> str:
-    W, H = 860, 374
+    W, H = 860, 480
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     p: list[str] = []
 
