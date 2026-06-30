@@ -8,8 +8,9 @@ agent theater, no synthetic loading traces. It leads with completed work:
   right  merged pull requests, grouped by the upstream project they landed in
 
 Two timeframes are in play and both are labelled on the card: pull-request
-totals are all-time; the per-project commit heatmaps cover the last 14 weeks.
-Open PRs are de-emphasised (intent, not achievement) to a single muted line.
+totals cover the last year; the per-project commit heatmaps cover the last
+14 days. Open PRs are de-emphasised (intent, not achievement) to a single
+muted line.
 
 Deterministic, so it runs without any API key and its output is reproducible.
 Private repos are invisible to the GitHub Actions token by design and are not
@@ -36,6 +37,7 @@ GH_TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
 OUT = Path(__file__).resolve().parent.parent / "assets" / "widget.svg"
 
 HEAT_DAYS = 14  # how many days of commit history each project heatmap shows
+WINDOW_DAYS = 365  # contribution stats (PRs, reviews) cover the last year
 
 # Scientific-Python / ML libraries, by repo name. Used only to label the
 # "in review" line — the libraries data scientists actually use, currently
@@ -164,9 +166,12 @@ def collect_projects(limit: int = 2) -> list[dict]:
 
 # ── my merged contributions (PRs that actually landed, grouped by repo) ───────
 def collect_contributions() -> dict:
+    since = (
+        datetime.now(timezone.utc) - timedelta(days=WINDOW_DAYS)
+    ).strftime("%Y-%m-%d")
     try:
         res = gh(
-            f"/search/issues?q=type:pr+author:{USER}"
+            f"/search/issues?q=type:pr+author:{USER}+created:>={since}"
             f"&sort=updated&order=desc&per_page=100"
         )
         items = res.get("items", [])
@@ -217,7 +222,7 @@ def collect_contributions() -> dict:
         "merged": merged,
         "merged_upstream": merged_upstream,
         "merged_projects": merged_projects,
-        "reviewed": search_count(f"type:pr+reviewed-by:{USER}"),
+        "reviewed": search_count(f"type:pr+reviewed-by:{USER}+created:>={since}"),
         "bars": bars,
         "in_review": in_review,
         "total_prs": len(items),
@@ -287,10 +292,10 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'as of {today}</text>'
     )
 
-    # stat row — merged-focused, all-time
+    # stat row — merged-focused, last year
     p.append(
         f'<text x="{W-32}" y="106" fill="{MUTED}" font-size="10.5" '
-        f'text-anchor="end" letter-spacing="1">ALL-TIME</text>'
+        f'text-anchor="end" letter-spacing="1">LAST YEAR</text>'
     )
     stats = [
         (str(c["merged"]), "PRs merged", GREEN),
@@ -410,7 +415,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
     )
     p.append(
         f'<text x="32" y="{H-14}" fill="{MUTED}" font-size="11">'
-        f'pull requests: all-time ({c["total_prs"]} analyzed) · '
+        f'pull requests: last year ({c["total_prs"]} analysed) · '
         f'commit heatmaps: last {HEAT_DAYS} days · GitHub API · refreshed daily'
         f'</text>'
     )
