@@ -250,7 +250,7 @@ def heat_color(n: int) -> str:
 
 
 def render_svg(projects: list[dict], c: dict) -> str:
-    W, H = 860, 480
+    W, H = 860, 510
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     p: list[str] = []
 
