@@ -33,10 +33,22 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/widget.svg
-          if git diff --cached --quiet; then
-            echo "no change"
-          else
+          # master is shared (daily schedule + manual pushes), so another commit
+          # can land between checkout and push. Rebuild our commit on the latest
+          # tip and retry, rather than failing the run on a non-fast-forward.
+          for i in 1 2 3; do
+            git fetch -q origin master
+            git reset --soft origin/master
+            git add assets/widget.svg
+            if git diff --cached --quiet; then
+              echo "no change"
+              exit 0
+            fi
             git commit -m "chore: refresh profile widget"
-            git push
-          fi
+            if git push origin HEAD:master; then
+              exit 0
+            fi
+            echo "push raced, retrying ($i)…"
+          done
+          echo "push still failing after retries" >&2
+          exit 1
