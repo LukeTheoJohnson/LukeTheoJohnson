@@ -285,7 +285,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
     )
     p.append(
         f'<text x="32" y="74" fill="{MUTED}" font-size="13.5">'
-        f'Projects I ship &amp; contributions that landed upstream</text>'
+        f'Projects I Build &amp; contributions upstream</text>'
     )
     p.append(
         f'<text x="{W-32}" y="74" fill="{MUTED}" font-size="12" text-anchor="end">'
