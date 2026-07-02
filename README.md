@@ -2,7 +2,6 @@
 
 <img src="assets/widget.svg" alt="Profile widget: my public projects (each with a 14-day commit heatmap) and merged open-source contributions grouped by upstream project, with scientific-Python work in review — refreshed daily from the GitHub API" width="100%"/>
 
-<sub><a href="agent/generate.py">source</a></sub>
 </div>
 
 <div align="center">
