@@ -1,3 +1,16 @@
+
+
+<img src="assets/widget.svg" alt="Profile widget: my public projects (each with a 14-day commit heatmap) and merged open-source contributions grouped by upstream project, with scientific-Python work in review — refreshed daily from the GitHub API" width="100%"/>
+
+<sub><a href="agent/generate.py">source</a></sub>
+</div>
+
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:2ac3de,30:7aa2f7,65:bb9af7,100:9d7cd8&height=100&section=footer&animation=twinkling" width="100%"/>
+
+</div>
+
 <!-- <img src="https://capsule-render.vercel.app/api?type=waving&color=0:2ac3de,30:7aa2f7,65:bb9af7,100:9d7cd8&height=180&section=header&text=Luke%20Johnson&fontSize=70&fontColor=ffffff&animation=fadeIn" width="100%"/> -->
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -10,14 +23,3 @@
 ![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
 
 <div align="center">
-
-<img src="assets/widget.svg" alt="Profile widget: my public projects (each with a 14-day commit heatmap) and merged open-source contributions grouped by upstream project, with scientific-Python work in review — refreshed daily from the GitHub API" width="100%"/>
-
-<sub><a href="agent/generate.py">source</a></sub>
-</div>
-
-<div align="center">
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:2ac3de,30:7aa2f7,65:bb9af7,100:9d7cd8&height=100&section=footer&animation=twinkling" width="100%"/>
-
-</div>
