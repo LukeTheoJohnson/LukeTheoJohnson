@@ -85,6 +85,15 @@ LANG_COLOURS = {
     "C": "#555555", "C++": "#F34B7D", "Ruby": "#701516",
 }
 
+# Official Python logo mark (two-snake, no text) as a reusable <symbol>. Used
+# on project cards instead of a plain language dot; other languages keep the dot.
+PY_LOGO = (
+    '<symbol id="pylogo" viewBox="0 0 256 255">'
+    '<path fill="#3776AB" d="M126.916.072c-64.832 0-60.784 28.115-60.784 28.115l.072 29.128h61.868v8.745H41.631S.145 61.355.145 126.77c0 65.417 36.21 63.097 36.21 63.097h21.61v-30.356s-1.165-36.21 35.632-36.21h61.362s34.475.557 34.475-33.319V33.97S194.67.072 126.916.072zM92.802 19.66a11.12 11.12 0 0 1 11.13 11.13 11.12 11.12 0 0 1-11.13 11.13 11.12 11.12 0 0 1-11.13-11.13 11.12 11.12 0 0 1 11.13-11.13z"/>'
+    '<path fill="#FFD43B" d="M128.757 254.126c64.832 0 60.784-28.115 60.784-28.115l-.072-29.127H127.6v-8.745h86.542s41.486 4.705 41.486-60.712c0-65.416-36.21-63.096-36.21-63.096h-21.61v30.355s1.165 36.21-35.632 36.21h-61.362s-34.475-.557-34.475 33.32v56.013s-5.235 33.897 62.518 33.897zm34.114-19.586a11.12 11.12 0 0 1-11.13-11.13 11.12 11.12 0 0 1 11.13-11.131 11.12 11.12 0 0 1 11.13 11.13 11.12 11.12 0 0 1-11.13 11.13z"/>'
+    '</symbol>'
+)
+
 
 def gh(path: str):
     req = urllib.request.Request(
@@ -284,10 +293,10 @@ def render_svg(projects: list[dict], c: dict) -> str:
     cx, cw = 32, 410
     sq, gap = 9, 2
     strip_w = HEAT_DAYS * (sq + gap) - gap
-    card_h, pitch = 70, 78  # each project card, and the row-to-row pitch
+    card_h, pitch = 60, 68  # each project card, and the row-to-row pitch
 
     # pre-measure so the total height hugs the content. Each card is three rows:
-    # name, then language·stars (left) with the commit count (right, under the
+    # name, then language (left) with the commit count (right, under the
     # heatmap), then a full-width description line.
     for pr in projects:
         pr["desc_line"] = t(pr["description"] or rel_age(pr["pushed_at"]), 52)
@@ -320,7 +329,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'<linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">'
         f'<stop offset="0" stop-color="{BLUE}" stop-opacity="0.35"/>'
         f'<stop offset="1" stop-color="{BLUE}" stop-opacity="0.02"/>'
-        '</linearGradient></defs>'
+        f'</linearGradient>{PY_LOGO}</defs>'
     )
     # one-shot entrance motion only (bars grow, cells sweep in, spark line
     # draws); the sole loop is a slow pulse on today's active heatmap cell.
@@ -408,31 +417,33 @@ def render_svg(projects: list[dict], c: dict) -> str:
             )
             # name (top-left)
             p.append(
-                f'<text x="{cx+16}" y="{cy+24}" fill="{FG}" font-size="15" '
+                f'<text x="{cx+16}" y="{cy+22}" fill="{FG}" font-size="15" '
                 f'font-weight="600">{escape(t(pr["name"], 20))}</text>'
             )
-            # language + stars (mid-left); commit count stays right, under the heatmap
+            # language (mid-left); commit count stays right, under the heatmap
             lang = pr["language"]
-            dot = (
-                f'<tspan fill="{LANG_COLOURS.get(lang, MUTED)}">● </tspan>'
-                if lang
-                else ""
-            )
-            lang_stars = " · ".join(
-                ([escape(lang)] if lang else [])
-                + ([f'★ {pr["stars"]}'] if pr.get("stars") else [])
-            )
+            if lang == "Python":
+                p.append(
+                    f'<use href="#pylogo" x="{cx+16}" y="{cy+29}" '
+                    f'width="12" height="12"/>'
+                )
+                p.append(
+                    f'<text x="{cx+33}" y="{cy+39}" fill="{MUTED}" '
+                    f'font-size="10.5">Python</text>'
+                )
+            elif lang:
+                p.append(
+                    f'<text x="{cx+16}" y="{cy+39}" fill="{MUTED}" font-size="10.5">'
+                    f'<tspan fill="{LANG_COLOURS.get(lang, MUTED)}">● </tspan>'
+                    f'{escape(lang)}</text>'
+                )
             p.append(
-                f'<text x="{cx+16}" y="{cy+44}" fill="{MUTED}" font-size="10.5">'
-                f'{dot}{lang_stars}</text>'
-            )
-            p.append(
-                f'<text x="{cx+cw-16}" y="{cy+44}" fill="{MUTED}" font-size="10.5" '
+                f'<text x="{cx+cw-16}" y="{cy+39}" fill="{MUTED}" font-size="10.5" '
                 f'text-anchor="end">{pr.get("commits", 0)} commits</text>'
             )
             # description (bottom, full width)
             p.append(
-                f'<text x="{cx+16}" y="{cy+62}" fill="{MUTED}" '
+                f'<text x="{cx+16}" y="{cy+54}" fill="{MUTED}" '
                 f'font-size="12">{escape(pr["desc_line"])}</text>'
             )
             # daily commit heatmap, top-right; today's active cell pulses
@@ -447,7 +458,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
                         f'style="animation-delay:{0.1 + i * 0.03:.2f}s"'
                     )
                 p.append(
-                    f'<rect x="{x0 + i*(sq+gap)}" y="{cy+14}" width="{sq}" '
+                    f'<rect x="{x0 + i*(sq+gap)}" y="{cy+13}" width="{sq}" '
                     f'height="{sq}" rx="2" fill="{heat_color(n)}"{anim}/>'
                 )
             cy += pitch
