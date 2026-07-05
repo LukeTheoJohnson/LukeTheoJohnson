@@ -2,8 +2,6 @@
 
 <img src="assets/widget.svg" alt="Profile widget: my public projects (each with a 14-day commit heatmap) and merged open-source contributions grouped by upstream project, with scientific-Python work in review — refreshed daily from the GitHub API" width="100%"/>
 
-</div>
-
 <div align="center">
 
 <!-- <img src="https://capsule-render.vercel.app/api?type=waving&color=0:2ac3de,30:7aa2f7,65:bb9af7,100:9d7cd8&height=100&section=footer&animation=twinkling" width="100%"/> -->
@@ -32,5 +30,3 @@
 ![Obsidian](https://img.shields.io/badge/Obsidian-7C3AED?style=for-the-badge&logo=obsidian&logoColor=white)
 ![Markdown](https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
-
-<div align="center">
