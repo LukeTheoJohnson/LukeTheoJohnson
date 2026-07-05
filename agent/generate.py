@@ -236,17 +236,6 @@ def t(s: str, n: int) -> str:
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
-def wrap2(s: str, w1: int, w2: int) -> list[str]:
-    """Word-wrap onto at most two lines (widths w1, w2); ellipsise overflow."""
-    s = " ".join(str(s).split())
-    if len(s) <= w1:
-        return [s]
-    cut = s.rfind(" ", 0, w1 + 1)
-    if cut <= 0:
-        cut = w1
-    return [s[:cut].rstrip(), t(s[cut:].lstrip(), w2)]
-
-
 def heat_color(n: int) -> str:
     """Map a daily commit count to a ramp colour — fixed thresholds so even a
     single commit reads as clearly green (GitHub-style), not relative-faint."""
@@ -267,21 +256,17 @@ def render_svg(projects: list[dict], c: dict) -> str:
     sq, gap = 9, 2
     strip_w = HEAT_DAYS * (sq + gap) - gap
 
-    # pre-measure: wrap each description so the total height can hug the
-    # content. Line 1 must stop clear of the right-aligned "N commits" label;
-    # line 2 has the full card width.
+    # pre-measure so the total height hugs the content. Descriptions are a
+    # single line, capped where the right-aligned "N commits" label begins.
     for pr in projects:
         desc = pr["description"] or (
             f'{pr["language"]} · {rel_age(pr["pushed_at"])}'
             if pr["language"]
             else rel_age(pr["pushed_at"])
         )
-        pr["desc_lines"] = wrap2(desc, 45, 55)
-        pr["card_h"] = 68 if len(pr["desc_lines"]) > 1 else 54
+        pr["desc_line"] = t(desc, 45)
 
-    left_bottom = 200 + (
-        sum(pr["card_h"] + 8 for pr in projects) - 8 if projects else 22
-    )
+    left_bottom = 200 + (len(projects) * 62 - 8 if projects else 22)
     right_bottom = 210 + len(c["bars"]) * 30 - 16
     if c["in_review"]:
         right_bottom = 210 + len(c["bars"]) * 30 + 20
@@ -369,20 +354,18 @@ def render_svg(projects: list[dict], c: dict) -> str:
     cy = 200
     if projects:
         for pr in projects:
-            ch = pr["card_h"]
             p.append(
-                f'<rect x="{cx}" y="{cy}" width="{cw}" height="{ch}" rx="10" '
+                f'<rect x="{cx}" y="{cy}" width="{cw}" height="54" rx="10" '
                 f'fill="{PANEL}"/>'
             )
             p.append(
                 f'<text x="{cx+16}" y="{cy+24}" fill="{FG}" font-size="15" '
                 f'font-weight="600">{escape(t(pr["name"], 20))}</text>'
             )
-            for j, line in enumerate(pr["desc_lines"]):
-                p.append(
-                    f'<text x="{cx+16}" y="{cy+43+j*16}" fill="{MUTED}" '
-                    f'font-size="12">{escape(line)}</text>'
-                )
+            p.append(
+                f'<text x="{cx+16}" y="{cy+43}" fill="{MUTED}" '
+                f'font-size="12">{escape(pr["desc_line"])}</text>'
+            )
             # daily commit heatmap, right-aligned
             heat = pr.get("heat") or [0] * HEAT_DAYS
             x0 = cx + cw - 16 - strip_w
@@ -395,7 +378,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
                 f'<text x="{cx+cw-16}" y="{cy+44}" fill="{MUTED}" font-size="10.5" '
                 f'text-anchor="end">{pr.get("commits", 0)} commits</text>'
             )
-            cy += ch + 8
+            cy += 62
     else:
         p.append(
             f'<text x="{cx+4}" y="{cy+18}" fill="{MUTED}" font-size="13">'
