@@ -14,20 +14,26 @@
 
 **Languages**  
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![R](https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![Lua](https://img.shields.io/badge/Lua-000080?style=for-the-badge&logo=lua&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
 
 **Data Analytics**  
 ![pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
 ![Polars](https://img.shields.io/badge/Polars-CD792C?style=for-the-badge&logo=polars&logoColor=white)
+![PySpark](https://img.shields.io/badge/PySpark-E25A1C?style=for-the-badge&logo=apachespark&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
 ![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
 ![Databricks](https://img.shields.io/badge/Databricks-FF3621?style=for-the-badge&logo=databricks&logoColor=white)
 ![Snowflake](https://img.shields.io/badge/Snowflake-29B5E8?style=for-the-badge&logo=snowflake&logoColor=white)
 ![BigQuery](https://img.shields.io/badge/BigQuery-669DF6?style=for-the-badge&logo=googlebigquery&logoColor=white)
-![Cube.js](https://img.shields.io/badge/Cube.js-141446?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyOCI%2BPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIzLjk0MTggN0wxMS45NzMxIDBWNC44NDMzOEwyMy45NDE4IDExLjgxMzNMMjMuOTQxOCA3WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0yMy45NDE3IDExLjgxMzNMMjAuMzUxMiAxMy45MjQ3TDExLjk3MDkgOS4wMzIyNkw3LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIxTDExLjk3MzEgNC44NDMzOEwyMy45NDE3IDExLjgxMzNaIi8%2BPHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuNTUiIGQ9Ik03LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIzVjEzLjkyNDdMNy4xODI1NiAxMS44MTcyWiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0wIDIwLjg0OTVMMTEuOTcwOCAxMy45MjQ4TDIzLjk0MTcgMjAuODQ5NUwxMS45NzA4IDI3Ljg0OTVMMCAyMC44NDk1WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMy45NDE4IDE2LjA0MzhMMTEuOTcwOSA4Ljk1NzAzVjEzLjkyNDhMMjMuOTQxOCAyMC44NDk1TDIzLjk0MTggMTYuMDQzOFoiLz48cGF0aCBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii43IiBkPSJNMy41OTEyNiAxMy45MjQ3VjkuODYwMjFMMTEuOTczMSA0Ljg0MzM4VjBMMCA3VjIwLjg0OTVMMTEuOTcwOCAxMy45MjQ3VjguOTU2OTlMMy41OTEyNiAxMy45MjQ3WiIvPjwvc3ZnPg%3D%3D)
+![Darts](https://img.shields.io/badge/Darts-1E4C6B?style=for-the-badge&logoColor=white)
+![PyCaret](https://img.shields.io/badge/PyCaret-2A9D8F?style=for-the-badge&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![Shiny](https://img.shields.io/badge/Shiny-447099?style=for-the-badge&logo=posit&logoColor=white)
+![Cube.js](https://img.shields.io/badge/Cube.js-141446?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyOCI%2BPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIzLjk0MTggN0wxMS45NzMxIDBWNC44NDMzOEwyMy45NDE4IDExLjgxMzNMMjMuOTQxOCA3WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0yMy45NDE3IDExLjgxMzNMMjAuMzUxMiAxMy45MjQ3TDExLjk3MDkgOS4wMzIyNkw3LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIxTDExLjk3MzEgNC44NDMzOEwyMy45NDE3IDExLjgxMzNaIi8%2BPHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuNTUiIGQ9Ik03LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIzVjEzLjkyNDdMNy4xODI1NiAxMS44MTcyWiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0wIDIwLjg0OTVMMTEuOTcwOCAxMy45MjQ4TDIzLjk0MTcgMjAuODQ5NUwxMS45NzA4IDI3Ljg0OTVMMCAyMC44NDk1WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMy45NDE4IDE2LjA0MzhMMTEuOTcwOSA4Ljk1NzAzVjEzLjkyNDhMMjMuOTQxOCAyMC44NDk1TDIzLjk0MTggMTYuMDQzOFoiLz48cGF0aCBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii43IiBkPSJNMy41OTEyNiAxMy45MjQ3VjkuODYwMjFMMTEuOTczMSA0Ljg0MzM4VjBMMCA3VjIwLjg0OTVMMTEuOTcwOCAxMy45MjQ3VjguOTU2OTlMMy41OTEyNiAxMy45MjQ3WiIvPjwvc3ZnPg%3D%3D)
 
 **AI & LLMs**  
 ![Claude](https://img.shields.io/badge/Claude_API-d97706?style=for-the-badge&logo=anthropic&logoColor=white)
