@@ -94,6 +94,15 @@ PY_LOGO = (
     '</symbol>'
 )
 
+# GitHub octicons (16px viewBox) tagging each banner stat, tinted to the stat's
+# colour: git-merge, git-pull-request, repo, code-review.
+STAT_ICONS = {
+    "merge": "M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 .005V3.25Z",
+    "pr": "M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25.75a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Z",
+    "repo": "M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z",
+    "review": "M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm5.28 1.72a.75.75 0 0 1 0 1.06L5.31 7l1.47 1.47a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-2-2a.75.75 0 0 1 0-1.06l2-2a.75.75 0 0 1 1.06 0Zm2.44 0a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.69 7 9.22 5.53a.75.75 0 0 1 0-1.06Z",
+}
+
 
 def gh(path: str):
     req = urllib.request.Request(
@@ -113,6 +122,15 @@ def search_count(q: str) -> int:
         return int(gh(f"/search/issues?q={q}&per_page=1").get("total_count", 0))
     except (urllib.error.URLError, urllib.error.HTTPError, ValueError) as e:
         print(f"warn: count failed for {q!r} ({e})", file=sys.stderr)
+        return 0
+
+
+def repo_stars(full: str) -> int:
+    """Stargazer count for an owner/name repo (0 on any failure)."""
+    try:
+        return int(gh(f"/repos/{full}").get("stargazers_count", 0))
+    except (urllib.error.URLError, urllib.error.HTTPError, ValueError) as e:
+        print(f"warn: stars fetch failed for {full} ({e})", file=sys.stderr)
         return 0
 
 
@@ -227,13 +245,15 @@ def collect_contributions() -> dict:
 
     bars = sorted(
         (
-            {"name": r.split("/", 1)[1], "value": s["merged"]}
+            {"full": r, "name": r.split("/", 1)[1], "value": s["merged"]}
             for r, s in by_repo.items()
             if s["merged"] and is_external(r)
         ),
         key=lambda d: d["value"],
         reverse=True,
     )[:4]
+    for b in bars:  # only the few repos we actually draw
+        b["stars"] = repo_stars(b["full"])
 
     in_review = sorted(
         r.split("/", 1)[1]
@@ -286,6 +306,19 @@ def heat_color(n: int) -> str:
     if n <= 6:
         return HEAT[3]
     return HEAT[4]
+
+
+def octicon(name: str, x, y, col: str, size: int = 16) -> str:
+    """A tinted 16px GitHub octicon as a positioned nested <svg>."""
+    return (
+        f'<svg x="{x}" y="{y}" width="{size}" height="{size}" viewBox="0 0 16 16">'
+        f'<path fill="{col}" d="{STAT_ICONS[name]}"/></svg>'
+    )
+
+
+def kfmt(n: int) -> str:
+    """Compact star count: 1234 -> '1.2k', 950 -> '950'."""
+    return f"{n / 1000:.1f}k".replace(".0k", "k") if n >= 1000 else str(n)
 
 
 def render_svg(projects: list[dict], c: dict) -> str:
@@ -373,19 +406,21 @@ def render_svg(projects: list[dict], c: dict) -> str:
     # stat row — merged-focused, last year; tight pitch so the group reads
     # as one cluster, with the timeframe tag anchoring the row's right edge
     stats = [
-        (str(c["merged"]), "PRs merged", GREEN),
-        (str(c["merged_upstream"]), "upstream", PURPLE),
-        (str(c["merged_projects"]), "OSS projects", BLUE),
-        (str(c["reviewed"]), "reviewed", CYAN),
+        (str(c["merged"]), "PRs merged", GREEN, "merge"),
+        (str(c["merged_upstream"]), "upstream", PURPLE, "pr"),
+        (str(c["merged_projects"]), "OSS projects", BLUE, "repo"),
+        (str(c["reviewed"]), "reviewed", CYAN, "review"),
     ]
     sx = 32
-    for value, label, col in stats:
+    for value, label, col, ic in stats:
+        p.append(octicon(ic, sx, 101, col, 16))
+        nx = sx + 22  # number sits just right of its icon
         p.append(
-            f'<text x="{sx}" y="120" fill="{col}" font-size="30" '
+            f'<text x="{nx}" y="120" fill="{col}" font-size="30" '
             f'font-weight="700">{escape(value)}</text>'
         )
         p.append(
-            f'<text x="{sx+2}" y="138" fill="{MUTED}" font-size="12">'
+            f'<text x="{nx+2}" y="138" fill="{MUTED}" font-size="12">'
             f'{escape(label)}</text>'
         )
         sx += 130
@@ -402,7 +437,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
     # ── left: my own projects (cards with commit heatmap) ────────────────────
     p.append(
         f'<text x="32" y="186" fill="{CYAN}" font-size="11.5" letter-spacing="1.5">'
-        f'PERSONAL PROJECTS</text>'
+        f'PROJECTS I&apos;M WORKING IN</text>'
     )
     p.append(
         f'<text x="442" y="186" fill="{MUTED}" font-size="10" text-anchor="end" '
@@ -482,8 +517,14 @@ def render_svg(projects: list[dict], c: dict) -> str:
         bw = max(int((b["value"] / maxv) * track_w), 4)
         p.append(
             f'<text x="{bx}" y="{by+11}" fill="{FG}" font-size="13">'
-            f'{escape(t(b["name"], 22))}</text>'
+            f'{escape(t(b["name"], 20))}</text>'
         )
+        if b.get("stars"):
+            p.append(
+                f'<text x="{track_x-12}" y="{by+11}" fill="{MUTED}" '
+                f'font-size="10.5" text-anchor="end">'
+                f'<tspan fill="{ORANGE}">★</tspan> {kfmt(b["stars"])}</text>'
+            )
         p.append(
             f'<rect x="{track_x}" y="{by}" width="{track_w}" height="14" rx="4" '
             f'fill="{PANEL}"/>'
