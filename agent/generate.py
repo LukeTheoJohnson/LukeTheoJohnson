@@ -326,16 +326,16 @@ def render_svg(projects: list[dict], c: dict) -> str:
     cx, cw = 32, 410
     sq, gap = 9, 2
     strip_w = HEAT_DAYS * (sq + gap) - gap
-    card_h, pitch = 60, 68  # each project card, and the row-to-row pitch
+    card_h, pitch = 46, 54  # each project card, and the row-to-row pitch
 
-    # pre-measure so the total height hugs the content. Each card is three rows:
-    # name, then language (left) with the commit count (right, under the
-    # heatmap), then a full-width description line.
+    # pre-measure so the total height hugs the content. Each card is two rows:
+    # the language mark + name (with the heatmap opposite), then a description
+    # line with the commit count opposite it.
     for pr in projects:
-        pr["desc_line"] = t(pr["description"] or rel_age(pr["pushed_at"]), 52)
+        pr["desc_line"] = t(pr["description"] or rel_age(pr["pushed_at"]), 44)
 
-    left_bottom = 200 + (len(projects) * pitch - 8 if projects else 22)
-    bars_end = 210 + len(c["bars"]) * 30
+    left_bottom = 188 + (len(projects) * pitch - 8 if projects else 22)
+    bars_end = 198 + len(c["bars"]) * 30
     ir_end = bars_end + 20 if c["in_review"] else bars_end - 16
     spark_label_y = ir_end + 26
     spark_top = spark_label_y + 10
@@ -399,8 +399,8 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'letter-spacing="2">ML · DATA SCIENCE</text>'
     )
     p.append(
-        f'<text x="{W-32}" y="74" fill="{MUTED}" font-size="12" text-anchor="end">'
-        f'as of {today}</text>'
+        f'<text x="{W-32}" y="76" fill="{MUTED}" font-size="15" text-anchor="end">'
+        f'{today}</text>'
     )
 
     # stat row — merged-focused, last year; tight pitch so the group reads
@@ -413,72 +413,72 @@ def render_svg(projects: list[dict], c: dict) -> str:
     ]
     sx = 32
     for value, label, col, ic in stats:
-        p.append(octicon(ic, sx, 101, col, 16))
+        p.append(octicon(ic, sx, 89, col, 16))
         nx = sx + 22  # number sits just right of its icon
         p.append(
-            f'<text x="{nx}" y="120" fill="{col}" font-size="30" '
+            f'<text x="{nx}" y="108" fill="{col}" font-size="30" '
             f'font-weight="700">{escape(value)}</text>'
         )
         p.append(
-            f'<text x="{nx+2}" y="138" fill="{MUTED}" font-size="12">'
+            f'<text x="{nx+2}" y="126" fill="{MUTED}" font-size="12">'
             f'{escape(label)}</text>'
         )
         sx += 130
     p.append(
-        f'<text x="{W-32}" y="138" fill="{MUTED}" font-size="10.5" '
+        f'<text x="{W-32}" y="126" fill="{MUTED}" font-size="10.5" '
         f'text-anchor="end" letter-spacing="1">LAST YEAR</text>'
     )
 
     p.append(
-        f'<line x1="32" y1="158" x2="{W-32}" y2="158" '
+        f'<line x1="32" y1="146" x2="{W-32}" y2="146" '
         f'stroke="{MUTED}" stroke-opacity="0.25"/>'
     )
 
     # ── left: my own projects (cards with commit heatmap) ────────────────────
     p.append(
-        f'<text x="32" y="186" fill="{CYAN}" font-size="11.5" letter-spacing="1.5">'
+        f'<text x="32" y="174" fill="{CYAN}" font-size="11.5" letter-spacing="1.5">'
         f'PROJECTS I&apos;M WORKING IN</text>'
     )
     p.append(
-        f'<text x="442" y="186" fill="{MUTED}" font-size="10" text-anchor="end" '
+        f'<text x="442" y="174" fill="{MUTED}" font-size="10" text-anchor="end" '
         f'letter-spacing="0.5">commits / {HEAT_DAYS}d</text>'
     )
-    cy = 200
+    cy = 188
     if projects:
         for pr in projects:
             p.append(
                 f'<rect x="{cx}" y="{cy}" width="{cw}" height="{card_h}" rx="10" '
                 f'fill="{PANEL}"/>'
             )
-            # name (top-left)
-            p.append(
-                f'<text x="{cx+16}" y="{cy+22}" fill="{FG}" font-size="15" '
-                f'font-weight="600">{escape(t(pr["name"], 20))}</text>'
-            )
-            # language (mid-left); commit count stays right, under the heatmap
+            # name row: language mark (Python logo, else a coloured dot) sits
+            # immediately left of the name; the heatmap sits opposite
             lang = pr["language"]
             if lang == "Python":
                 p.append(
-                    f'<use href="#pylogo" x="{cx+16}" y="{cy+29}" '
-                    f'width="12" height="12"/>'
+                    f'<use href="#pylogo" x="{cx+16}" y="{cy+9}" '
+                    f'width="14" height="14"/>'
                 )
-                p.append(
-                    f'<text x="{cx+33}" y="{cy+39}" fill="{MUTED}" '
-                    f'font-size="10.5">Python</text>'
-                )
+                name_x = cx + 36
             elif lang:
                 p.append(
-                    f'<text x="{cx+16}" y="{cy+39}" fill="{MUTED}" font-size="10.5">'
-                    f'<tspan fill="{LANG_COLOURS.get(lang, MUTED)}">● </tspan>'
-                    f'{escape(lang)}</text>'
+                    f'<circle cx="{cx+20}" cy="{cy+16}" r="4" '
+                    f'fill="{LANG_COLOURS.get(lang, MUTED)}"/>'
                 )
+                name_x = cx + 30
+            else:
+                name_x = cx + 16
             p.append(
-                f'<text x="{cx+cw-16}" y="{cy+39}" fill="{MUTED}" font-size="10.5" '
+                f'<text x="{name_x}" y="{cy+21}" fill="{FG}" font-size="15" '
+                f'font-weight="600">{escape(t(pr["name"], 20))}</text>'
+            )
+            # commit count, right-anchored under the heatmap
+            p.append(
+                f'<text x="{cx+cw-16}" y="{cy+38}" fill="{MUTED}" font-size="10.5" '
                 f'text-anchor="end">{pr.get("commits", 0)} commits</text>'
             )
-            # description (bottom, full width)
+            # description (second row, left)
             p.append(
-                f'<text x="{cx+16}" y="{cy+54}" fill="{MUTED}" '
+                f'<text x="{cx+16}" y="{cy+38}" fill="{MUTED}" '
                 f'font-size="12">{escape(pr["desc_line"])}</text>'
             )
             # daily commit heatmap, top-right; today's active cell pulses
@@ -493,7 +493,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
                         f'style="animation-delay:{0.1 + i * 0.03:.2f}s"'
                     )
                 p.append(
-                    f'<rect x="{x0 + i*(sq+gap)}" y="{cy+13}" width="{sq}" '
+                    f'<rect x="{x0 + i*(sq+gap)}" y="{cy+11}" width="{sq}" '
                     f'height="{sq}" rx="2" fill="{heat_color(n)}"{anim}/>'
                 )
             cy += pitch
@@ -506,25 +506,27 @@ def render_svg(projects: list[dict], c: dict) -> str:
     # ── right: merged PRs by upstream project (bars) ─────────────────────────
     bx = 470
     p.append(
-        f'<text x="{bx}" y="186" fill="{CYAN}" font-size="11.5" letter-spacing="1.5">'
-        f'MERGED PRs — UPSTREAM</text>'
+        f'<text x="{bx}" y="174" fill="{CYAN}" font-size="11.5" letter-spacing="1.5">'
+        f'MERGED PRs</text>'
     )
     bars = c["bars"]
     maxv = max((b["value"] for b in bars), default=1) or 1
     track_x, track_w = bx + 180, 146
-    by = 210
+    name_x = bx + 52  # left gutter reserved for the star count
+    by = 198
     for i, b in enumerate(bars):
         bw = max(int((b["value"] / maxv) * track_w), 4)
-        p.append(
-            f'<text x="{bx}" y="{by+11}" fill="{FG}" font-size="13">'
-            f'{escape(t(b["name"], 20))}</text>'
-        )
+        # star count in the left gutter, just before the repo name
         if b.get("stars"):
             p.append(
-                f'<text x="{track_x-12}" y="{by+11}" fill="{MUTED}" '
+                f'<text x="{bx+44}" y="{by+11}" fill="{MUTED}" '
                 f'font-size="10.5" text-anchor="end">'
                 f'<tspan fill="{ORANGE}">★</tspan> {kfmt(b["stars"])}</text>'
             )
+        p.append(
+            f'<text x="{name_x}" y="{by+11}" fill="{FG}" font-size="13">'
+            f'{escape(t(b["name"], 16))}</text>'
+        )
         p.append(
             f'<rect x="{track_x}" y="{by}" width="{track_w}" height="14" rx="4" '
             f'fill="{PANEL}"/>'
