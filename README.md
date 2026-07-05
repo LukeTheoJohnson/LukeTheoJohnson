@@ -16,7 +16,7 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
 
-**Analytics**  
+**Data Analytics**  
 ![pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
 ![Polars](https://img.shields.io/badge/Polars-CD792C?style=for-the-badge&logo=polars&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
@@ -25,6 +25,7 @@
 ![Databricks](https://img.shields.io/badge/Databricks-FF3621?style=for-the-badge&logo=databricks&logoColor=white)
 ![Snowflake](https://img.shields.io/badge/Snowflake-29B5E8?style=for-the-badge&logo=snowflake&logoColor=white)
 ![Cube.js](https://img.shields.io/badge/Cube.js-141446?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyOCI%2BPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIzLjk0MTggN0wxMS45NzMxIDBWNC44NDMzOEwyMy45NDE4IDExLjgxMzNMMjMuOTQxOCA3WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0yMy45NDE3IDExLjgxMzNMMjAuMzUxMiAxMy45MjQ3TDExLjk3MDkgOS4wMzIyNkw3LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIxTDExLjk3MzEgNC44NDMzOEwyMy45NDE3IDExLjgxMzNaIi8%2BPHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuNTUiIGQ9Ik03LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIzVjEzLjkyNDdMNy4xODI1NiAxMS44MTcyWiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0wIDIwLjg0OTVMMTEuOTcwOCAxMy45MjQ4TDIzLjk0MTcgMjAuODQ5NUwxMS45NzA4IDI3Ljg0OTVMMCAyMC44NDk1WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMy45NDE4IDE2LjA0MzhMMTEuOTcwOSA4Ljk1NzAzVjEzLjkyNDhMMjMuOTQxOCAyMC44NDk1TDIzLjk0MTggMTYuMDQzOFoiLz48cGF0aCBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii43IiBkPSJNMy41OTEyNiAxMy45MjQ3VjkuODYwMjFMMTEuOTczMSA0Ljg0MzM4VjBMMCA3VjIwLjg0OTVMMTEuOTcwOCAxMy45MjQ3VjguOTU2OTlMMy41OTEyNiAxMy45MjQ3WiIvPjwvc3ZnPg%3D%3D)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 
 **AI & LLMs**  
 ![Claude](https://img.shields.io/badge/Claude_API-d97706?style=for-the-badge&logo=anthropic&logoColor=white)
@@ -35,8 +36,13 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Slack API](https://img.shields.io/badge/Slack_API-4A154B?style=for-the-badge&logo=slack&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=for-the-badge&logo=pydantic&logoColor=white)
+![Google Sheets](https://img.shields.io/badge/Google_Sheets-34A853?style=for-the-badge&logo=googlesheets&logoColor=white)
 
 **Tooling & DevOps**  
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Markdown](https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white)
+![Ruff](https://img.shields.io/badge/Ruff-D7FF64?style=for-the-badge&logo=ruff&logoColor=black)
+![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
