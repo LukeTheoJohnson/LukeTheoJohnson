@@ -26,6 +26,7 @@ Output: assets/widget.svg
 
 from __future__ import annotations
 
+import calendar
 import json
 import os
 import sys
@@ -69,7 +70,6 @@ PANEL = "#24283b"
 PANEL2 = "#1f2335"
 FG = "#c0caf5"
 MUTED = "#565f89"
-SOFT = "#737aa2"  # lighter muted — legible for the subtitle
 BLUE = "#70a5fd"
 PURPLE = "#bb9af7"
 GREEN = "#9ece6a"
@@ -284,20 +284,21 @@ def render_svg(projects: list[dict], c: dict) -> str:
     cx, cw = 32, 410
     sq, gap = 9, 2
     strip_w = HEAT_DAYS * (sq + gap) - gap
+    card_h, pitch = 70, 78  # each project card, and the row-to-row pitch
 
-    # pre-measure so the total height hugs the content. Language/stars/commits
-    # sit on their own right-anchored row under the heatmap, so the single
-    # description line below gets nearly the full card width.
+    # pre-measure so the total height hugs the content. Each card is three rows:
+    # name, then language·stars (left) with the commit count (right, under the
+    # heatmap), then a full-width description line.
     for pr in projects:
         pr["desc_line"] = t(pr["description"] or rel_age(pr["pushed_at"]), 52)
 
-    left_bottom = 200 + (len(projects) * 66 - 8 if projects else 22)
+    left_bottom = 200 + (len(projects) * pitch - 8 if projects else 22)
     bars_end = 210 + len(c["bars"]) * 30
     ir_end = bars_end + 20 if c["in_review"] else bars_end - 16
     spark_label_y = ir_end + 26
     spark_top = spark_label_y + 10
     spark_h = 36
-    right_bottom = spark_top + spark_h + 6
+    right_bottom = spark_top + spark_h + 18  # + room for the x-axis month labels
     H = max(left_bottom, right_bottom) + 58
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -356,10 +357,6 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'letter-spacing="2">ML · DATA SCIENCE</text>'
     )
     p.append(
-        f'<text x="32" y="74" fill="{SOFT}" font-size="13.5">'
-        f'Projects I build &amp; contributions upstream</text>'
-    )
-    p.append(
         f'<text x="{W-32}" y="74" fill="{MUTED}" font-size="12" text-anchor="end">'
         f'as of {today}</text>'
     )
@@ -406,18 +403,39 @@ def render_svg(projects: list[dict], c: dict) -> str:
     if projects:
         for pr in projects:
             p.append(
-                f'<rect x="{cx}" y="{cy}" width="{cw}" height="58" rx="10" '
+                f'<rect x="{cx}" y="{cy}" width="{cw}" height="{card_h}" rx="10" '
                 f'fill="{PANEL}"/>'
             )
+            # name (top-left)
             p.append(
                 f'<text x="{cx+16}" y="{cy+24}" fill="{FG}" font-size="15" '
                 f'font-weight="600">{escape(t(pr["name"], 20))}</text>'
             )
+            # language + stars (mid-left); commit count stays right, under the heatmap
+            lang = pr["language"]
+            dot = (
+                f'<tspan fill="{LANG_COLOURS.get(lang, MUTED)}">● </tspan>'
+                if lang
+                else ""
+            )
+            lang_stars = " · ".join(
+                ([escape(lang)] if lang else [])
+                + ([f'★ {pr["stars"]}'] if pr.get("stars") else [])
+            )
             p.append(
-                f'<text x="{cx+16}" y="{cy+48}" fill="{MUTED}" '
+                f'<text x="{cx+16}" y="{cy+44}" fill="{MUTED}" font-size="10.5">'
+                f'{dot}{lang_stars}</text>'
+            )
+            p.append(
+                f'<text x="{cx+cw-16}" y="{cy+44}" fill="{MUTED}" font-size="10.5" '
+                f'text-anchor="end">{pr.get("commits", 0)} commits</text>'
+            )
+            # description (bottom, full width)
+            p.append(
+                f'<text x="{cx+16}" y="{cy+62}" fill="{MUTED}" '
                 f'font-size="12">{escape(pr["desc_line"])}</text>'
             )
-            # daily commit heatmap, right-aligned; today's active cell pulses
+            # daily commit heatmap, top-right; today's active cell pulses
             heat = pr.get("heat") or [0] * HEAT_DAYS
             x0 = cx + cw - 16 - strip_w
             for i, n in enumerate(heat):
@@ -429,24 +447,10 @@ def render_svg(projects: list[dict], c: dict) -> str:
                         f'style="animation-delay:{0.1 + i * 0.03:.2f}s"'
                     )
                 p.append(
-                    f'<rect x="{x0 + i*(sq+gap)}" y="{cy+12}" width="{sq}" '
+                    f'<rect x="{x0 + i*(sq+gap)}" y="{cy+14}" width="{sq}" '
                     f'height="{sq}" rx="2" fill="{heat_color(n)}"{anim}/>'
                 )
-            meta = " · ".join(
-                ([escape(pr["language"])] if pr["language"] else [])
-                + ([f'★ {pr["stars"]}'] if pr.get("stars") else [])
-                + [f'{pr.get("commits", 0)} commits']
-            )
-            dot = (
-                f'<tspan fill="{LANG_COLOURS.get(pr["language"], MUTED)}">● </tspan>'
-                if pr["language"]
-                else ""
-            )
-            p.append(
-                f'<text x="{cx+cw-16}" y="{cy+34}" fill="{MUTED}" font-size="10.5" '
-                f'text-anchor="end">{dot}{meta}</text>'
-            )
-            cy += 66
+            cy += pitch
     else:
         p.append(
             f'<text x="{cx+4}" y="{cy+18}" fill="{MUTED}" font-size="13">'
@@ -491,21 +495,38 @@ def render_svg(projects: list[dict], c: dict) -> str:
             f'in review: {escape(t(names, 44))}</text>'
         )
 
-    # ── merged-PR cadence, last 12 months (area sparkline) ───────────────────
+    # ── merged-PR cadence, last 12 months (area sparkline with light axes) ───
     monthly = c["monthly"]
     p.append(
         f'<text x="{bx}" y="{spark_label_y}" fill="{MUTED}" font-size="10" '
         f'letter-spacing="1">MERGED PRs / MONTH</text>'
     )
     sw = W - 32 - bx
-    smax = max(monthly) or 1
+    speak = max(monthly)
+    smax = speak or 1
     step = sw / (len(monthly) - 1)
+    base = spark_top + spark_h
     pts = [
-        (bx + i * step, spark_top + spark_h - (v / smax) * spark_h)
+        (bx + i * step, base - (v / smax) * spark_h)
         for i, v in enumerate(monthly)
     ]
     line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
-    base = spark_top + spark_h
+
+    # y-gridlines behind the area: a zero baseline, and a dashed peak line —
+    # each labelled in the gutter just left of the plot
+    grid = [(base, "0", "")]
+    if speak:
+        grid.append((spark_top, str(speak), ' stroke-dasharray="3 3"'))
+    for gy, glabel, dash in grid:
+        p.append(
+            f'<line x1="{bx}" y1="{gy:.1f}" x2="{W-32}" y2="{gy:.1f}" '
+            f'stroke="{MUTED}" stroke-opacity="0.25"{dash}/>'
+        )
+        p.append(
+            f'<text x="{bx-6}" y="{gy+3:.1f}" fill="{MUTED}" font-size="9" '
+            f'text-anchor="end">{glabel}</text>'
+        )
+
     p.append(
         f'<polygon points="{pts[0][0]:.1f},{base} {line} {pts[-1][0]:.1f},{base}" '
         f'fill="url(#spark)" class="fill"/>'
@@ -519,6 +540,23 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'<circle cx="{pts[-1][0]:.1f}" cy="{pts[-1][1]:.1f}" r="3" '
         f'fill="{CYAN}" class="dot"/>'
     )
+
+    # x-axis: month labels at the start, middle and end of the window
+    now_m = datetime.now(timezone.utc)
+
+    def _mlabel(idx: int) -> str:
+        m, y = now_m.month - (len(monthly) - 1 - idx), now_m.year
+        while m <= 0:
+            m, y = m + 12, y - 1
+        return calendar.month_abbr[m]
+
+    axis_y = base + 13
+    for idx, anchor in ((0, "start"), (len(monthly) // 2, "middle"),
+                        (len(monthly) - 1, "end")):
+        p.append(
+            f'<text x="{pts[idx][0]:.1f}" y="{axis_y}" fill="{MUTED}" '
+            f'font-size="9" text-anchor="{anchor}">{_mlabel(idx)}</text>'
+        )
 
     # ── provenance, with both timeframes spelled out ─────────────────────────
     p.append(
