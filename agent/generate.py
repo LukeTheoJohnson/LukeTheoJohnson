@@ -322,7 +322,7 @@ def kfmt(n: int) -> str:
 
 
 def render_svg(projects: list[dict], c: dict) -> str:
-    W = 860
+    W = 900
     cx, cw = 32, 410
     sq, gap = 9, 2
     strip_w = HEAT_DAYS * (sq + gap) - gap
@@ -357,11 +357,11 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'<stop offset="0" stop-color="{BG}"/><stop offset="1" stop-color="{PANEL2}"/>'
         '</linearGradient>'
         f'<linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">'
-        f'<stop offset="0" stop-color="{BLUE}"/><stop offset="1" stop-color="{PURPLE}"/>'
+        f'<stop offset="0" stop-color="#519a4e"/><stop offset="1" stop-color="{GREEN}"/>'
         '</linearGradient>'
         f'<linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">'
-        f'<stop offset="0" stop-color="{BLUE}" stop-opacity="0.35"/>'
-        f'<stop offset="1" stop-color="{BLUE}" stop-opacity="0.02"/>'
+        f'<stop offset="0" stop-color="{GREEN}" stop-opacity="0.35"/>'
+        f'<stop offset="1" stop-color="{GREEN}" stop-opacity="0.02"/>'
         f'</linearGradient>{PY_LOGO}</defs>'
     )
     # one-shot entrance motion only (bars grow, cells sweep in, spark line
@@ -506,12 +506,12 @@ def render_svg(projects: list[dict], c: dict) -> str:
     # ── right: merged PRs by upstream project (bars) ─────────────────────────
     bx = 470
     p.append(
-        f'<text x="{bx}" y="174" fill="{CYAN}" font-size="11.5" letter-spacing="1.5">'
+        f'<text x="{bx}" y="174" fill="{GREEN}" font-size="11.5" letter-spacing="1.5">'
         f'MERGED PRs</text>'
     )
     bars = c["bars"]
     maxv = max((b["value"] for b in bars), default=1) or 1
-    track_x, track_w = bx + 180, 146
+    track_x, track_w = bx + 225, 145
     name_x = bx + 52  # left gutter reserved for the star count
     by = 198
     for i, b in enumerate(bars):
@@ -525,7 +525,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
             )
         p.append(
             f'<text x="{name_x}" y="{by+11}" fill="{FG}" font-size="13">'
-            f'{escape(t(b["name"], 16))}</text>'
+            f'{escape(t(b["name"], 24))}</text>'
         )
         p.append(
             f'<rect x="{track_x}" y="{by}" width="{track_w}" height="14" rx="4" '
@@ -537,7 +537,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
             f'style="animation-delay:{0.1 + i * 0.08:.2f}s"/>'
         )
         p.append(
-            f'<text x="{track_x+track_w+10}" y="{by+11}" fill="{FG}" '
+            f'<text x="{track_x+track_w+10}" y="{by+11}" fill="{GREEN}" '
             f'font-size="12.5" font-weight="600">{b["value"]}</text>'
         )
         by += 30
@@ -586,13 +586,13 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'fill="url(#spark)" class="fill"/>'
     )
     p.append(
-        f'<polyline points="{line}" fill="none" stroke="{CYAN}" '
+        f'<polyline points="{line}" fill="none" stroke="{GREEN}" '
         f'stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" '
         f'class="line"/>'
     )
     p.append(
         f'<circle cx="{pts[-1][0]:.1f}" cy="{pts[-1][1]:.1f}" r="3" '
-        f'fill="{CYAN}" class="dot"/>'
+        f'fill="{GREEN}" class="dot"/>'
     )
 
     # x-axis: month labels at the start, middle and end of the window
