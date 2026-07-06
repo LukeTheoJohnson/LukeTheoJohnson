@@ -33,6 +33,7 @@
 ![PyCaret](https://img.shields.io/badge/PyCaret-2A9D8F?style=for-the-badge&logoColor=white)
 ![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iIzFhMWExYSIgZD0iTTEwIDEyYTEgMSAwIDAgMSAxIDF2MTFINGExIDEgMCAwIDEtMS0xVjEzYTEgMSAwIDAgMSAxLTFoNlptLTItLjVWN2ExIDEgMCAwIDEgMS0xaDZhMSAxIDAgMCAxIDEgMXYxN2gtNC41VjEzYTEuNSAxLjUgMCAwIDAtMS41LTEuNUg4Wm01LTZWMWExIDEgMCAwIDEgMS0xaDZhMSAxIDAgMCAxIDEgMXYyMmExIDEgMCAwIDEtMSAxaC0zLjVWN0ExLjUgMS41IDAgMCAwIDE1IDUuNWgtMloiLz48L3N2Zz4%3D)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![Google Sheets](https://img.shields.io/badge/Sheets-34A853?style=for-the-badge&logo=googlesheets&logoColor=white)
 ![Shiny](https://img.shields.io/badge/Shiny-447099?style=for-the-badge&logo=posit&logoColor=white)
 ![Cube.js](https://img.shields.io/badge/Cube.js-141446?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyOCI%2BPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIzLjk0MTggN0wxMS45NzMxIDBWNC44NDMzOEwyMy45NDE4IDExLjgxMzNMMjMuOTQxOCA3WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0yMy45NDE3IDExLjgxMzNMMjAuMzUxMiAxMy45MjQ3TDExLjk3MDkgOS4wMzIyNkw3LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIxTDExLjk3MzEgNC44NDMzOEwyMy45NDE3IDExLjgxMzNaIi8%2BPHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuNTUiIGQ9Ik03LjE4MjU2IDExLjgxNzJMMy41OTEzMSA5Ljg2MDIzVjEzLjkyNDdMNy4xODI1NiAxMS44MTcyWiIvPjxwYXRoIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiIGQ9Ik0wIDIwLjg0OTVMMTEuOTcwOCAxMy45MjQ4TDIzLjk0MTcgMjAuODQ5NUwxMS45NzA4IDI3Ljg0OTVMMCAyMC44NDk1WiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMy45NDE4IDE2LjA0MzhMMTEuOTcwOSA4Ljk1NzAzVjEzLjkyNDhMMjMuOTQxOCAyMC44NDk1TDIzLjk0MTggMTYuMDQzOFoiLz48cGF0aCBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii43IiBkPSJNMy41OTEyNiAxMy45MjQ3VjkuODYwMjFMMTEuOTczMSA0Ljg0MzM4VjBMMCA3VjIwLjg0OTVMMTEuOTcwOCAxMy45MjQ3VjguOTU2OTlMMy41OTEyNiAxMy45MjQ3WiIvPjwvc3ZnPg%3D%3D)
 
@@ -50,7 +51,6 @@
 ![Slack API](https://img.shields.io/badge/Slack_API-4A154B?style=for-the-badge&logo=slack&logoColor=white)
 ![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=for-the-badge&logo=pydantic&logoColor=white)
 ![OpenAPI](https://img.shields.io/badge/OpenAPI-6BA539?style=for-the-badge&logo=openapiinitiative&logoColor=white)
-![Google Sheets](https://img.shields.io/badge/Sheets-34A853?style=for-the-badge&logo=googlesheets&logoColor=white)
 
 **Tooling & DevOps**  
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
