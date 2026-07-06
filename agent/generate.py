@@ -385,8 +385,8 @@ def render_svg(projects: list[dict], c: dict) -> str:
     ]
     sx = 32
     for value, label, col, ic in stats:
-        p.append(octicon(ic, sx, 88, col, 18))
-        nx = sx + 24  # number sits just right of its icon
+        p.append(octicon(ic, sx, 86, col, 22))
+        nx = sx + 30  # number sits just right of its icon
         p.append(
             f'<text x="{nx}" y="108" fill="{col}" font-size="30" '
             f'font-weight="700">{escape(value)}</text>'
