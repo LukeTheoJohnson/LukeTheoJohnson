@@ -29,8 +29,6 @@
 ![Databricks](https://img.shields.io/badge/Databricks-FF3621?style=for-the-badge&logo=databricks&logoColor=white)
 ![Snowflake](https://img.shields.io/badge/Snowflake-29B5E8?style=for-the-badge&logo=snowflake&logoColor=white)
 ![BigQuery](https://img.shields.io/badge/BigQuery-669DF6?style=for-the-badge&logo=googlebigquery&logoColor=white)
-![Darts](https://img.shields.io/badge/Darts-1E4C6B?style=for-the-badge&logoColor=white)
-![PyCaret](https://img.shields.io/badge/PyCaret-2A9D8F?style=for-the-badge&logoColor=white)
 ![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iIzFhMWExYSIgZD0iTTEwIDEyYTEgMSAwIDAgMSAxIDF2MTFINGExIDEgMCAwIDEtMS0xVjEzYTEgMSAwIDAgMSAxLTFoNlptLTItLjVWN2ExIDEgMCAwIDEgMS0xaDZhMSAxIDAgMCAxIDEgMXYxN2gtNC41VjEzYTEuNSAxLjUgMCAwIDAtMS41LTEuNUg4Wm01LTZWMWExIDEgMCAwIDEgMS0xaDZhMSAxIDAgMCAxIDEgMXYyMmExIDEgMCAwIDEtMSAxaC0zLjVWN0ExLjUgMS41IDAgMCAwIDE1IDUuNWgtMloiLz48L3N2Zz4%3D)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Google Sheets](https://img.shields.io/badge/Sheets-34A853?style=for-the-badge&logo=googlesheets&logoColor=white)
