@@ -14,8 +14,7 @@ prefers-reduced-motion, so reduced-motion viewers get the static final state.
 
 Two timeframes are in play and both are labelled on the card: pull-request
 totals cover the last year; the per-project commit heatmaps cover the last
-14 days. Open PRs are de-emphasised (intent, not achievement) to a single
-muted line.
+14 days.
 
 Deterministic, so it runs without any API key and its output is reproducible.
 Private repos are invisible to the GitHub Actions token by design and are not
@@ -44,25 +43,6 @@ OUT = Path(__file__).resolve().parent.parent / "assets" / "widget.svg"
 
 HEAT_DAYS = 14  # how many days of commit history each project heatmap shows
 WINDOW_DAYS = 365  # contribution stats (PRs, reviews) cover the last year
-
-# Scientific-Python / ML libraries, by repo name. Used only to label the
-# "in review" line — the libraries data scientists actually use, currently
-# in flight. Match is on the repo name (the part after the owner).
-DS_STACK = {
-    "numpy", "scipy", "pandas", "polars", "narwhals", "pyarrow", "duckdb",
-    "ibis", "dask", "xarray", "vaex", "modin",
-    "scikit-learn", "sklearn", "statsmodels", "patsy", "pingouin",
-    "xgboost", "lightgbm", "catboost", "imbalanced-learn",
-    "pytorch", "torch", "jax", "flax", "keras", "tensorflow",
-    "transformers", "datasets", "accelerate", "tokenizers", "diffusers",
-    "huggingface_hub", "sentence-transformers", "einops", "safetensors",
-    "matplotlib", "seaborn", "plotly", "plotly.py", "altair", "bokeh", "holoviews",
-    "pymc", "arviz", "numpyro", "lifelines", "linearmodels", "prophet",
-    "statsforecast", "sktime", "darts", "tsfresh",
-    "pandera", "great-expectations", "shap", "optuna", "mlflow", "wandb",
-    "spacy", "nltk", "gensim", "networkx", "sympy", "scikit-image",
-    "umap", "hdbscan", "faiss", "annoy",
-}
 
 # ── tokyo-night palette (matches the rest of the profile README) ─────────────
 BG = "#1a1b27"
@@ -255,12 +235,6 @@ def collect_contributions() -> dict:
     for b in bars:  # only the few repos we actually draw
         b["stars"] = repo_stars(b["full"])
 
-    in_review = sorted(
-        r.split("/", 1)[1]
-        for r, s in by_repo.items()
-        if r.split("/", 1)[1].lower() in DS_STACK and s["open"] and not s["merged"]
-    )[:4]
-
     # merged PRs bucketed by merge month, oldest → newest, for the sparkline
     monthly = [0] * 12
     now = datetime.now(timezone.utc)
@@ -283,7 +257,6 @@ def collect_contributions() -> dict:
         "merged_projects": merged_projects,
         "reviewed": search_count(f"type:pr+reviewed-by:{USER}+created:>={since}"),
         "bars": bars,
-        "in_review": in_review,
         "total_prs": len(items),
     }
 
@@ -336,8 +309,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
 
     left_bottom = 188 + (len(projects) * pitch - 8 if projects else 22)
     bars_end = 198 + len(c["bars"]) * 30
-    ir_end = bars_end + 20 if c["in_review"] else bars_end - 16
-    spark_label_y = ir_end + 26
+    spark_label_y = bars_end + 10
     spark_top = spark_label_y + 10
     spark_h = 36
     right_bottom = spark_top + spark_h + 18  # + room for the x-axis month labels
@@ -413,8 +385,8 @@ def render_svg(projects: list[dict], c: dict) -> str:
     ]
     sx = 32
     for value, label, col, ic in stats:
-        p.append(octicon(ic, sx, 89, col, 16))
-        nx = sx + 22  # number sits just right of its icon
+        p.append(octicon(ic, sx, 88, col, 18))
+        nx = sx + 24  # number sits just right of its icon
         p.append(
             f'<text x="{nx}" y="108" fill="{col}" font-size="30" '
             f'font-weight="700">{escape(value)}</text>'
@@ -542,13 +514,6 @@ def render_svg(projects: list[dict], c: dict) -> str:
         )
         by += 30
 
-    if c["in_review"]:
-        names = " · ".join(c["in_review"])
-        p.append(
-            f'<text x="{bx}" y="{by+16}" fill="{MUTED}" font-size="11.5">'
-            f'in review: {escape(t(names, 44))}</text>'
-        )
-
     # ── merged-PR cadence, last 12 months (area sparkline with light axes) ───
     monthly = c["monthly"]
     p.append(
@@ -637,7 +602,7 @@ def main():
     print(
         f"wrote {OUT} ({len(svg)} bytes) · "
         f"{len(projects)} projects / {contrib['merged']} merged / "
-        f"{len(contrib['bars'])} bars / {len(contrib['in_review'])} in review"
+        f"{len(contrib['bars'])} bars"
     )
 
 

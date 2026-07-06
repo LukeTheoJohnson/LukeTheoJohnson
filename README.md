@@ -1,7 +1,7 @@
 
 
 <a href="https://github.com/LukeTheoJohnson?tab=repositories">
-<img src="assets/widget.svg" alt="Profile widget: my public projects (language, stars and a 14-day commit heatmap each) and merged open-source contributions grouped by upstream project, with scientific-Python work in review and a 12-month merged-PR cadence chart — refreshed daily from the GitHub API" width="100%"/>
+<img src="assets/widget.svg" alt="Profile widget: my public projects (language, stars and a 14-day commit heatmap each) and merged open-source contributions grouped by upstream project and a 12-month merged-PR cadence chart — refreshed daily from the GitHub API" width="100%"/>
 </a>
 
 <div align="center">
