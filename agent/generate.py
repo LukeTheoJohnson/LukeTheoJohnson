@@ -65,14 +65,23 @@ LANG_COLOURS = {
     "C": "#555555", "C++": "#F34B7D", "Ruby": "#701516",
 }
 
-# Official Python logo mark (two-snake, no text) as a reusable <symbol>. Used
-# on project cards instead of a plain language dot; other languages keep the dot.
-PY_LOGO = (
-    '<symbol id="pylogo" viewBox="0 0 256 255">'
+# Reusable <symbol> logo marks for project cards, drawn in place of the plain
+# language dot for any language we have a mark for. Languages absent from LOGOS
+# keep their coloured dot; repos with no language get no mark. Add a language by
+# dropping a <symbol> in LOGO_DEFS and a row in LOGOS.
+LOGO_DEFS = (
+    # Official Python logo mark (two-snake, no text)
+    '<symbol id="logo-python" viewBox="0 0 256 255">'
     '<path fill="#3776AB" d="M126.916.072c-64.832 0-60.784 28.115-60.784 28.115l.072 29.128h61.868v8.745H41.631S.145 61.355.145 126.77c0 65.417 36.21 63.097 36.21 63.097h21.61v-30.356s-1.165-36.21 35.632-36.21h61.362s34.475.557 34.475-33.319V33.97S194.67.072 126.916.072zM92.802 19.66a11.12 11.12 0 0 1 11.13 11.13 11.12 11.12 0 0 1-11.13 11.13 11.12 11.12 0 0 1-11.13-11.13 11.12 11.12 0 0 1 11.13-11.13z"/>'
     '<path fill="#FFD43B" d="M128.757 254.126c64.832 0 60.784-28.115 60.784-28.115l-.072-29.127H127.6v-8.745h86.542s41.486 4.705 41.486-60.712c0-65.416-36.21-63.096-36.21-63.096h-21.61v30.355s1.165 36.21-35.632 36.21h-61.362s-34.475-.557-34.475 33.32v56.013s-5.235 33.897 62.518 33.897zm34.114-19.586a11.12 11.12 0 0 1-11.13-11.13 11.12 11.12 0 0 1 11.13-11.131 11.12 11.12 0 0 1 11.13 11.13 11.12 11.12 0 0 1-11.13 11.13z"/>'
     '</symbol>'
+    # Terminal glyph (GitHub octicon), tinted the Shell linguist green
+    '<symbol id="logo-shell" viewBox="0 0 16 16">'
+    '<path fill="#89E051" d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 14.25 15H1.75A1.75 1.75 0 0 1 0 13.25Zm1.75-.25a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25ZM7.25 8a.749.749 0 0 1-.22.53l-2.25 2.25a.749.749 0 0 1-1.06 0 .749.749 0 0 1 0-1.06L5.44 8 3.72 6.28a.749.749 0 1 1 1.06-1.06l2.25 2.25c.141.14.22.331.22.53Zm1.5 1.5h3a.75.75 0 0 1 0 1.5h-3a.75.75 0 0 1 0-1.5Z"/>'
+    '</symbol>'
 )
+# GitHub language → symbol id in LOGO_DEFS
+LOGOS = {"Python": "logo-python", "Shell": "logo-shell"}
 
 # GitHub octicons (16px viewBox) tagging each banner stat, tinted to the stat's
 # colour: git-merge, git-pull-request, repo, code-review.
@@ -334,7 +343,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'<linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">'
         f'<stop offset="0" stop-color="{GREEN}" stop-opacity="0.35"/>'
         f'<stop offset="1" stop-color="{GREEN}" stop-opacity="0.02"/>'
-        f'</linearGradient>{PY_LOGO}</defs>'
+        f'</linearGradient>{LOGO_DEFS}</defs>'
     )
     # one-shot entrance motion only (bars grow, cells sweep in, spark line
     # draws); the sole loop is a slow pulse on today's active heatmap cell.
@@ -422,12 +431,14 @@ def render_svg(projects: list[dict], c: dict) -> str:
                 f'<rect x="{cx}" y="{cy}" width="{cw}" height="{card_h}" rx="10" '
                 f'fill="{PANEL}"/>'
             )
-            # name row: language mark (Python logo, else a coloured dot) sits
-            # immediately left of the name; the heatmap sits opposite
+            # name row: language mark (a logo if we have one for the language,
+            # else a coloured dot) sits immediately left of the name; the
+            # heatmap sits opposite
             lang = pr["language"]
-            if lang == "Python":
+            sym = LOGOS.get(lang)
+            if sym:
                 p.append(
-                    f'<use href="#pylogo" x="{cx+16}" y="{cy+9}" '
+                    f'<use href="#{sym}" x="{cx+16}" y="{cy+9}" '
                     f'width="14" height="14"/>'
                 )
                 name_x = cx + 36
