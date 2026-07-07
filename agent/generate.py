@@ -487,7 +487,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
     name_x = bx + 52  # left gutter reserved for the star count
     by = 198
     for i, b in enumerate(bars):
-        bw = max(int((b["value"] / maxv) * track_w), 4)
+        bw = max(int((b["value"] / maxv) * track_w), 9)
         # star count in the left gutter, just before the repo name
         if b.get("stars"):
             p.append(
@@ -498,10 +498,6 @@ def render_svg(projects: list[dict], c: dict) -> str:
         p.append(
             f'<text x="{name_x}" y="{by+11}" fill="{FG}" font-size="13">'
             f'{escape(t(b["name"], 24))}</text>'
-        )
-        p.append(
-            f'<rect x="{track_x}" y="{by}" width="{track_w}" height="14" rx="4" '
-            f'fill="{PANEL}"/>'
         )
         p.append(
             f'<rect x="{track_x}" y="{by}" width="{bw}" height="14" rx="4" '
