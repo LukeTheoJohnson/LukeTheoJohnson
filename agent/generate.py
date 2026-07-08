@@ -377,7 +377,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
     )
     p.append(
         f'<text x="{W-32}" y="44" fill="{CYAN}" font-size="13" text-anchor="end" '
-        f'letter-spacing="2">ML · DATA SCIENCE</text>'
+        f'letter-spacing="2">AGENTIC ENGINEERING · MACHINE LEARNING · DATA SCIENCE</text>'
     )
     p.append(
         f'<text x="{W-32}" y="76" fill="{MUTED}" font-size="15" text-anchor="end">'
@@ -418,7 +418,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
     # ── left: my own projects (cards with commit heatmap) ────────────────────
     p.append(
         f'<text x="32" y="174" fill="{CYAN}" font-size="11.5" letter-spacing="1.5">'
-        f'PROJECTS I&apos;M WORKING IN</text>'
+        f'PROJECTS I&apos;M WORKING ON</text>'
     )
     p.append(
         f'<text x="442" y="174" fill="{MUTED}" font-size="10" text-anchor="end" '
