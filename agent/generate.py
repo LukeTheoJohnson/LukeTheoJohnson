@@ -18,7 +18,9 @@ totals cover the last year; the per-project commit heatmaps cover the last
 
 Identity is env-configurable — WIDGET_USER (defaults to the repo owner when
 run in GitHub Actions), WIDGET_NAME and WIDGET_TAGLINE — so a fork works
-without code edits.
+without code edits. Row counts are too: WIDGET_PROJECT_LIMIT and
+WIDGET_BAR_LIMIT cap the two columns, and the card height stretches to fit
+whatever those allow.
 
 Deterministic, so it runs without any API key and its output is reproducible.
 Private repos are invisible to the GitHub Actions token by design and are not
@@ -54,6 +56,18 @@ OUT = Path(__file__).resolve().parent.parent / "assets" / "widget.svg"
 
 HEAT_DAYS = 14  # how many days of commit history each project heatmap shows
 WINDOW_DAYS = 365  # contribution stats (PRs, reviews) cover the last year
+
+
+def _env_int(name: str, default: int) -> int:
+    try:
+        return max(1, int(os.environ.get(name, default)))
+    except ValueError:
+        print(f"warn: {name} is not an integer, using {default}", file=sys.stderr)
+        return default
+
+
+PROJECT_LIMIT = _env_int("WIDGET_PROJECT_LIMIT", 6)  # own-project cards drawn
+BAR_LIMIT = _env_int("WIDGET_BAR_LIMIT", 6)  # merged-PR repo bars drawn
 
 # ── tokyo-night palette (matches the rest of the profile README) ─────────────
 BG = "#1a1b27"
@@ -186,7 +200,7 @@ def commit_days(repo: str, days: int = HEAT_DAYS) -> list[int]:
 
 
 # ── my own public projects (non-fork repos I push to) ────────────────────────
-def collect_projects(limit: int = 4) -> list[dict]:
+def collect_projects(limit: int = PROJECT_LIMIT) -> list[dict]:
     try:
         repos = gh(f"/users/{USER}/repos?sort=pushed&per_page=100")
     except (urllib.error.URLError, urllib.error.HTTPError) as e:
@@ -261,7 +275,7 @@ def collect_contributions() -> dict:
         ),
         key=lambda d: d["value"],
         reverse=True,
-    )[:4]
+    )[:BAR_LIMIT]
     for b in bars:  # only the few repos we actually draw
         b["stars"] = repo_stars(b["full"])
 
