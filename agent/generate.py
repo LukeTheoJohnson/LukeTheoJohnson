@@ -531,8 +531,12 @@ def render_svg(projects: list[dict], c: dict) -> str:
     )
     bars = c["bars"]
     maxv = max((b["value"] for b in bars), default=1) or 1
-    track_x, track_w = bx + 225, 145
-    name_x = bx + 52  # left gutter reserved for the star count
+    name_x = bx + 52  # left gutter reserved for the star column
+    # name column sized to the longest repo name (~6.7px/char at 13px), so
+    # long names get room and the bar track absorbs whatever is left over
+    longest = max((len(t(b["name"], 28)) for b in bars), default=0)
+    track_x = name_x + min(int(longest * 6.7) + 14, 210)
+    track_w = max(W - 32 - 34 - track_x, 60)
     by = 198
     if not bars:
         p.append(
@@ -541,16 +545,20 @@ def render_svg(projects: list[dict], c: dict) -> str:
         )
     for i, b in enumerate(bars):
         bw = max(int((b["value"] / maxv) * track_w), 9)
-        # star count in the left gutter, just before the repo name
+        # star gutter: ★ glyphs in a fixed left column, counts right-aligned
+        # against the name column, so neither wanders with count length
         if b.get("stars"):
             p.append(
+                f'<text x="{bx}" y="{by+11}" fill="{ORANGE}" '
+                f'font-size="10.5">★</text>'
+            )
+            p.append(
                 f'<text x="{bx+44}" y="{by+11}" fill="{MUTED}" '
-                f'font-size="10.5" text-anchor="end">'
-                f'<tspan fill="{ORANGE}">★</tspan> {kfmt(b["stars"])}</text>'
+                f'font-size="10.5" text-anchor="end">{kfmt(b["stars"])}</text>'
             )
         p.append(
             f'<text x="{name_x}" y="{by+11}" fill="{FG}" font-size="13">'
-            f'{escape(t(b["name"], 24))}</text>'
+            f'{escape(t(b["name"], 28))}</text>'
         )
         p.append(
             f'<rect x="{track_x}" y="{by}" width="{bw}" height="14" rx="4" '
