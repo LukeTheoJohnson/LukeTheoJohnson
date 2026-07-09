@@ -16,6 +16,10 @@ Two timeframes are in play and both are labelled on the card: pull-request
 totals cover the last year; the per-project commit heatmaps cover the last
 14 days.
 
+Identity is env-configurable — WIDGET_USER (defaults to the repo owner when
+run in GitHub Actions), WIDGET_NAME and WIDGET_TAGLINE — so a fork works
+without code edits.
+
 Deterministic, so it runs without any API key and its output is reproducible.
 Private repos are invisible to the GitHub Actions token by design and are not
 shown; private commit volume already surfaces via the stats card.
@@ -36,8 +40,15 @@ from datetime import datetime, timedelta, timezone
 from html import escape
 from pathlib import Path
 
-USER = os.environ.get("WIDGET_USER", "LukeTheoJohnson")
+USER = (
+    os.environ.get("WIDGET_USER")
+    or os.environ.get("GITHUB_REPOSITORY_OWNER")  # set by GitHub Actions
+    or "LukeTheoJohnson"
+)
 NAME = os.environ.get("WIDGET_NAME", "Luke Johnson")
+TAGLINE = os.environ.get(
+    "WIDGET_TAGLINE", "AGENTIC ENGINEERING · MACHINE LEARNING · DATA SCIENCE"
+)
 GH_TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
 OUT = Path(__file__).resolve().parent.parent / "assets" / "widget.svg"
 
@@ -57,13 +68,23 @@ ORANGE = "#e0af68"
 CYAN = "#7dcfff"
 # green ramp for the commit heatmap (empty → busiest), GitHub-style
 HEAT = ["#2d3350", "#3b6e47", "#519a4e", "#73c05a", "#9ece6a"]
-# GitHub linguist colours for the per-project language dot
+# GitHub linguist colours for the per-project language dot. The full map is
+# vendored in lang_colours.json (~675 languages); this inline dozen is only
+# the fallback if that file goes missing.
 LANG_COLOURS = {
     "Python": "#3572A5", "Go": "#00ADD8", "TypeScript": "#3178C6",
     "JavaScript": "#F1E05A", "Rust": "#DEA584", "HTML": "#E34C26",
     "CSS": "#663399", "Shell": "#89E051", "Jupyter Notebook": "#DA5B0B",
     "C": "#555555", "C++": "#F34B7D", "Ruby": "#701516",
 }
+try:
+    LANG_COLOURS.update(
+        json.loads(
+            Path(__file__).with_name("lang_colours.json").read_text(encoding="utf-8")
+        )
+    )
+except (OSError, ValueError) as e:
+    print(f"warn: lang_colours.json not loaded ({e})", file=sys.stderr)
 
 # Reusable <symbol> logo marks for project cards, drawn in place of the plain
 # language dot for any language we have a mark for. Languages absent from LOGOS
@@ -317,11 +338,13 @@ def render_svg(projects: list[dict], c: dict) -> str:
         pr["desc_line"] = t(pr["description"] or rel_age(pr["pushed_at"]), 44)
 
     left_bottom = 188 + (len(projects) * pitch - 8 if projects else 22)
-    bars_end = 198 + len(c["bars"]) * 30
+    bars_end = 198 + (len(c["bars"]) * 30 if c["bars"] else 22)
+    has_spark = max(c["monthly"]) > 0  # all-zero months: skip the flatline chart
     spark_label_y = bars_end + 10
     spark_top = spark_label_y + 10
     spark_h = 36
-    right_bottom = spark_top + spark_h + 18  # + room for the x-axis month labels
+    # sparkline height includes room for the x-axis month labels
+    right_bottom = (spark_top + spark_h + 18) if has_spark else bars_end
     H = max(left_bottom, right_bottom) + 58
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -377,7 +400,7 @@ def render_svg(projects: list[dict], c: dict) -> str:
     )
     p.append(
         f'<text x="{W-32}" y="44" fill="{CYAN}" font-size="13" text-anchor="end" '
-        f'letter-spacing="2">AGENTIC ENGINEERING · MACHINE LEARNING · DATA SCIENCE</text>'
+        f'letter-spacing="2">{escape(TAGLINE)}</text>'
     )
     p.append(
         f'<text x="{W-32}" y="76" fill="{MUTED}" font-size="15" text-anchor="end">'
@@ -497,6 +520,11 @@ def render_svg(projects: list[dict], c: dict) -> str:
     track_x, track_w = bx + 225, 145
     name_x = bx + 52  # left gutter reserved for the star count
     by = 198
+    if not bars:
+        p.append(
+            f'<text x="{bx+4}" y="{by+18}" fill="{MUTED}" font-size="13">'
+            f'none merged upstream yet</text>'
+        )
     for i, b in enumerate(bars):
         bw = max(int((b["value"] / maxv) * track_w), 9)
         # star count in the left gutter, just before the repo name
@@ -521,68 +549,70 @@ def render_svg(projects: list[dict], c: dict) -> str:
         )
         by += 30
 
-    # ── merged-PR cadence, last 12 months (area sparkline with light axes) ───
+    # ── merged-PR cadence, last 12 months (area sparkline with light axes);
+    # skipped entirely when the year is all zeros — no flatline chart ────────
     monthly = c["monthly"]
-    p.append(
-        f'<text x="{bx}" y="{spark_label_y}" fill="{MUTED}" font-size="10" '
-        f'letter-spacing="1">MERGED PRs / MONTH</text>'
-    )
-    sw = W - 32 - bx
-    speak = max(monthly)
-    smax = speak or 1
-    step = sw / (len(monthly) - 1)
-    base = spark_top + spark_h
-    pts = [
-        (bx + i * step, base - (v / smax) * spark_h)
-        for i, v in enumerate(monthly)
-    ]
-    line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
-
-    # y-gridlines behind the area: a zero baseline, and a dashed peak line —
-    # each labelled in the gutter just left of the plot
-    grid = [(base, "0", "")]
-    if speak:
-        grid.append((spark_top, str(speak), ' stroke-dasharray="3 3"'))
-    for gy, glabel, dash in grid:
+    if has_spark:
         p.append(
-            f'<line x1="{bx}" y1="{gy:.1f}" x2="{W-32}" y2="{gy:.1f}" '
-            f'stroke="{MUTED}" stroke-opacity="0.25"{dash}/>'
+            f'<text x="{bx}" y="{spark_label_y}" fill="{MUTED}" font-size="10" '
+            f'letter-spacing="1">MERGED PRs / MONTH</text>'
+        )
+        sw = W - 32 - bx
+        speak = max(monthly)
+        step = sw / (len(monthly) - 1)
+        base = spark_top + spark_h
+        pts = [
+            (bx + i * step, base - (v / speak) * spark_h)
+            for i, v in enumerate(monthly)
+        ]
+        line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+
+        # y-gridlines behind the area: a zero baseline, and a dashed peak
+        # line — each labelled in the gutter just left of the plot
+        grid = [
+            (base, "0", ""),
+            (spark_top, str(speak), ' stroke-dasharray="3 3"'),
+        ]
+        for gy, glabel, dash in grid:
+            p.append(
+                f'<line x1="{bx}" y1="{gy:.1f}" x2="{W-32}" y2="{gy:.1f}" '
+                f'stroke="{MUTED}" stroke-opacity="0.25"{dash}/>'
+            )
+            p.append(
+                f'<text x="{bx-6}" y="{gy+3:.1f}" fill="{MUTED}" font-size="9" '
+                f'text-anchor="end">{glabel}</text>'
+            )
+
+        p.append(
+            f'<polygon points="{pts[0][0]:.1f},{base} {line} '
+            f'{pts[-1][0]:.1f},{base}" fill="url(#spark)" class="fill"/>'
         )
         p.append(
-            f'<text x="{bx-6}" y="{gy+3:.1f}" fill="{MUTED}" font-size="9" '
-            f'text-anchor="end">{glabel}</text>'
+            f'<polyline points="{line}" fill="none" stroke="{GREEN}" '
+            f'stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" '
+            f'class="line"/>'
         )
-
-    p.append(
-        f'<polygon points="{pts[0][0]:.1f},{base} {line} {pts[-1][0]:.1f},{base}" '
-        f'fill="url(#spark)" class="fill"/>'
-    )
-    p.append(
-        f'<polyline points="{line}" fill="none" stroke="{GREEN}" '
-        f'stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" '
-        f'class="line"/>'
-    )
-    p.append(
-        f'<circle cx="{pts[-1][0]:.1f}" cy="{pts[-1][1]:.1f}" r="3" '
-        f'fill="{GREEN}" class="dot"/>'
-    )
-
-    # x-axis: month labels at the start, middle and end of the window
-    now_m = datetime.now(timezone.utc)
-
-    def _mlabel(idx: int) -> str:
-        m, y = now_m.month - (len(monthly) - 1 - idx), now_m.year
-        while m <= 0:
-            m, y = m + 12, y - 1
-        return calendar.month_abbr[m]
-
-    axis_y = base + 13
-    for idx, anchor in ((0, "start"), (len(monthly) // 2, "middle"),
-                        (len(monthly) - 1, "end")):
         p.append(
-            f'<text x="{pts[idx][0]:.1f}" y="{axis_y}" fill="{MUTED}" '
-            f'font-size="9" text-anchor="{anchor}">{_mlabel(idx)}</text>'
+            f'<circle cx="{pts[-1][0]:.1f}" cy="{pts[-1][1]:.1f}" r="3" '
+            f'fill="{GREEN}" class="dot"/>'
         )
+
+        # x-axis: month labels at the start, middle and end of the window
+        now_m = datetime.now(timezone.utc)
+
+        def _mlabel(idx: int) -> str:
+            m, y = now_m.month - (len(monthly) - 1 - idx), now_m.year
+            while m <= 0:
+                m, y = m + 12, y - 1
+            return calendar.month_abbr[m]
+
+        axis_y = base + 13
+        for idx, anchor in ((0, "start"), (len(monthly) // 2, "middle"),
+                            (len(monthly) - 1, "end")):
+            p.append(
+                f'<text x="{pts[idx][0]:.1f}" y="{axis_y}" fill="{MUTED}" '
+                f'font-size="9" text-anchor="{anchor}">{_mlabel(idx)}</text>'
+            )
 
     # ── provenance, with both timeframes spelled out ─────────────────────────
     p.append(
