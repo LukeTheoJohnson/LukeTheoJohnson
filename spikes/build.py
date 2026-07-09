@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+"""Build every spike from the cached data snapshot and emit a review gallery.
+
+    python spikes/build.py            # render from spikes/data.json
+    python spikes/build.py --refresh  # re-fetch live GitHub data first
+
+Writes spikes/<name>.svg for each spike and spikes/index.html — a single page
+that stacks all spikes against the current live widget for side-by-side review.
+The live widget (assets/widget.svg) and agent/generate.py are never touched.
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+
+from common import load_data  # noqa: E402
+import spike_terminal  # noqa: E402
+import spike_constellation  # noqa: E402
+import spike_editorial  # noqa: E402
+import spike_orbital  # noqa: E402
+
+SPIKES = [
+    ("01-terminal", "Terminal",
+     "A live shell session — monospace scrollback, block-glyph sparklines, "
+     "blinking prompt. Leans into the CLI identity.", spike_terminal),
+    ("02-constellation", "Constellation",
+     "A knowledge graph: a central node wired out to the upstream repos I've "
+     "landed in (size = PRs merged) and my own projects (size = commits).",
+     spike_constellation),
+    ("03-editorial", "Editorial",
+     "Swiss/magazine treatment — one enormous hero stat, a hairline grid, a "
+     "numbered index of work. Boldness through typographic scale.",
+     spike_editorial),
+    ("04-orbital", "Orbital",
+     "An instrument panel — a 270° merge-rate gauge and a 12-spoke radial "
+     "clock of merged PRs per month. Everything circular.", spike_orbital),
+]
+
+
+def render_all(refresh: bool = False) -> list[tuple]:
+    data = load_data(refresh=refresh)
+    built = []
+    for slug, title, blurb, mod in SPIKES:
+        svg = mod.render(data)
+        (HERE / f"{slug}.svg").write_text(svg, encoding="utf-8")
+        built.append((slug, title, blurb, len(svg)))
+        print(f"wrote spikes/{slug}.svg ({len(svg)} bytes)")
+    write_gallery(built)
+    return built
+
+
+def write_gallery(built: list[tuple]) -> None:
+    cards = []
+    # current live widget first, as the baseline to beat
+    cards.append(
+        '<section><div class="cap"><span class="tag base">CURRENT · LIVE</span>'
+        '<h2>Baseline widget</h2><p>The widget in the README today.</p></div>'
+        '<div class="frame"><img src="../assets/widget.svg" alt="live widget"></div>'
+        '</section>'
+    )
+    for slug, title, blurb, _ in built:
+        num = slug.split("-", 1)[0]
+        cards.append(
+            f'<section><div class="cap"><span class="tag">SPIKE {num}</span>'
+            f'<h2>{title}</h2><p>{blurb}</p></div>'
+            f'<div class="frame"><img src="{slug}.svg" alt="{title}"></div>'
+            f'</section>'
+        )
+    html = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile widget — spike review</title>
+<style>
+:root{{--bg:#16161f;--panel:#1f2030;--fg:#c0caf5;--muted:#565f89;--green:#9ece6a;--cyan:#7dcfff}}
+*{{box-sizing:border-box}}
+body{{margin:0;background:var(--bg);color:var(--fg);
+font-family:'Inter','Segoe UI',-apple-system,sans-serif;padding:48px 32px 80px}}
+header{{max-width:960px;margin:0 auto 40px}}
+h1{{font-size:26px;margin:0 0 6px}}
+header p{{color:var(--muted);margin:0;font-size:14px}}
+section{{max-width:960px;margin:0 auto 44px;background:var(--panel);
+border:1px solid rgba(86,95,137,.3);border-radius:16px;overflow:hidden}}
+.cap{{padding:22px 26px 6px}}
+.cap h2{{margin:8px 0 4px;font-size:19px}}
+.cap p{{margin:0;color:var(--muted);font-size:13.5px;max-width:70ch;line-height:1.5}}
+.tag{{display:inline-block;font-size:11px;letter-spacing:2px;color:var(--cyan);
+border:1px solid rgba(125,207,255,.4);border-radius:999px;padding:3px 10px}}
+.tag.base{{color:var(--green);border-color:rgba(158,206,106,.4)}}
+.frame{{padding:20px 26px 28px}}
+.frame img{{width:100%;height:auto;display:block;border-radius:10px}}
+footer{{max-width:960px;margin:0 auto;color:var(--muted);font-size:12px;text-align:center}}
+</style></head><body>
+<header><h1>Profile widget — spike review</h1>
+<p>Four bold reinventions rendered from the same real GitHub data. The live
+widget stays put; pick directions worth taking further.</p></header>
+{''.join(cards)}
+<footer>Rendered from spikes/data.json · regenerate with <code>python spikes/build.py --refresh</code></footer>
+</body></html>"""
+    (HERE / "index.html").write_text(html, encoding="utf-8")
+    print("wrote spikes/index.html")
+
+
+if __name__ == "__main__":
+    render_all(refresh="--refresh" in sys.argv)

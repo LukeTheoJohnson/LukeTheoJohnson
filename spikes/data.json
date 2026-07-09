@@ -1,0 +1,149 @@
+{
+  "name": "Luke Johnson",
+  "user": "LukeTheoJohnson",
+  "projects": [
+    {
+      "name": "claude-code-statusline",
+      "language": "Shell",
+      "stars": 0,
+      "description": "A single-file, dependency-light status line for Claude Code, driven off the native stdin JSON.",
+      "pushed_at": "2026-07-07T07:56:18Z",
+      "heat": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "commits": 6
+    },
+    {
+      "name": "trove",
+      "language": "Python",
+      "stars": 1,
+      "description": "CLI that polls 40+ sources into SQLite",
+      "pushed_at": "2026-07-06T07:31:26Z",
+      "heat": [
+        8,
+        0,
+        0,
+        7,
+        0,
+        0,
+        1,
+        9,
+        3,
+        7,
+        1,
+        3,
+        2,
+        0
+      ],
+      "commits": 41
+    },
+    {
+      "name": "thing-explainer",
+      "language": "Python",
+      "stars": 1,
+      "description": "Explain things using only common words",
+      "pushed_at": "2026-07-05T07:44:55Z",
+      "heat": [
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        3,
+        0,
+        0
+      ],
+      "commits": 14
+    },
+    {
+      "name": "dashboard-studio",
+      "language": "Python",
+      "stars": 1,
+      "description": "Dynamic Dashboards across multiple frontends",
+      "pushed_at": "2026-07-05T07:43:52Z",
+      "heat": [
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        5,
+        0,
+        0
+      ],
+      "commits": 9
+    }
+  ],
+  "contrib": {
+    "monthly": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      13,
+      4
+    ],
+    "merged": 17,
+    "merged_upstream": 15,
+    "merged_projects": 4,
+    "reviewed": 3,
+    "bars": [
+      {
+        "full": "Yeachan-Heo/oh-my-claudecode",
+        "name": "oh-my-claudecode",
+        "value": 8,
+        "stars": 37493
+      },
+      {
+        "full": "statsmodels/statsmodels",
+        "name": "statsmodels",
+        "value": 3,
+        "stars": 11495
+      },
+      {
+        "full": "mvanhorn/printing-press-library",
+        "name": "printing-press-library",
+        "value": 3,
+        "stars": 1752
+      },
+      {
+        "full": "mvanhorn/cli-printing-press",
+        "name": "cli-printing-press",
+        "value": 1,
+        "stars": 3887
+      }
+    ],
+    "total_prs": 31
+  }
+}
