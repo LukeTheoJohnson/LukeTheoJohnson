@@ -440,25 +440,46 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'<text x="{W-32}" y="97" fill="{MUTED}" font-size="10.5" '
         f'text-anchor="end" letter-spacing="1">LAST YEAR</text>'
     )
-    thr = escape(f'{kfmt(CORE_STARS)}+')
+    # insight laid out as positioned runs so the merge/repo icons sit inline,
+    # just left of their coloured numbers; textLength pins each text run's
+    # advance so the icons stay aligned regardless of the renderer's metrics.
+    # stars reuse the same ★ glyph as the bars, inline in the gold number run.
+    isz, ix, iy = 19, 32, 128
+    thr = f'★ {kfmt(CORE_STARS)}+'
     if c["core_projects"]:
-        insight = (
-            f'<tspan fill="{PURPLE}" font-weight="700">{c["core_contributions"]}'
-            f'</tspan> merged PRs across '
-            f'<tspan fill="{BLUE}" font-weight="700">{c["core_projects"]}</tspan>'
-            f' open-source projects, each with '
-            f'<tspan fill="{ORANGE}" font-weight="700">{thr}</tspan> stars.'
-        )
+        runs = [
+            ("i", "merge", PURPLE), ("n", str(c["core_contributions"]), PURPLE),
+            ("t", " merged PRs across ", FG),
+            ("i", "repo", BLUE), ("n", str(c["core_projects"]), BLUE),
+            ("t", " open-source projects, each with ", FG),
+            ("n", thr, ORANGE), ("t", " stars.", FG),
+        ]
     elif c["merged_upstream"]:
-        insight = (
-            f'<tspan fill="{PURPLE}" font-weight="700">{c["merged_upstream"]}'
-            f'</tspan> merged PRs across '
-            f'<tspan fill="{BLUE}" font-weight="700">{c["merged_projects"]}</tspan>'
-            f' open-source projects.'
-        )
+        runs = [
+            ("i", "merge", PURPLE), ("n", str(c["merged_upstream"]), PURPLE),
+            ("t", " merged PRs across ", FG),
+            ("i", "repo", BLUE), ("n", str(c["merged_projects"]), BLUE),
+            ("t", " open-source projects.", FG),
+        ]
     else:
-        insight = 'Building in the open — first contributions landing soon.'
-    p.append(f'<text x="32" y="128" font-size="19" fill="{FG}">{insight}</text>')
+        runs = [("t", "Building in the open — first contributions landing soon.", FG)]
+
+    for kind, val, col in runs:
+        if kind == "i":
+            p.append(octicon(val, ix, iy - isz + 4, col, isz - 4))
+            ix += isz - 2
+            continue
+        w = sum(
+            (0.28 if ch in " .,;:'!iljtfrI" else 0.86 if ch in "mwMW" else 0.54) * isz
+            for ch in val
+        )
+        bold = ' font-weight="700"' if kind == "n" else ""
+        p.append(
+            f'<text x="{ix:.0f}" y="{iy}" fill="{col}" font-size="{isz}"{bold} '
+            f'textLength="{w:.0f}" lengthAdjust="spacingAndGlyphs" '
+            f'xml:space="preserve">{escape(val)}</text>'
+        )
+        ix += w
 
     p.append(
         f'<line x1="32" y1="146" x2="{W-32}" y2="146" '
