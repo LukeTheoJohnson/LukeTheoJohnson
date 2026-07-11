@@ -23,8 +23,10 @@ WIDGET_BAR_LIMIT cap the two columns, and the card height stretches to fit
 whatever those allow.
 
 Deterministic, so it runs without any API key and its output is reproducible.
-Private repos are invisible to the GitHub Actions token by design and are not
-shown; private commit volume already surfaces via the stats card.
+Merged-PR data is scoped to public repos explicitly (is:public) and paginated,
+so private work never leaks regardless of which token runs it — a local PAT
+and the GitHub Actions token produce the same card; private commit volume
+already surfaces via the stats card.
 
 Output: assets/widget.svg
 """
@@ -150,6 +152,28 @@ def search_count(q: str) -> int:
         return 0
 
 
+def search_issues_all(q: str, cap_pages: int = 10) -> list[dict]:
+    """Every issue/PR search hit for query q, following pagination.
+
+    The GitHub search API returns at most 100 hits per page and 1000 total
+    (10 pages), so we walk pages until one comes back short. Fetching all
+    pages — rather than a single sorted page — is what keeps the merged-PR
+    counts honest once the year holds more than 100 PRs.
+    """
+    items: list[dict] = []
+    for page in range(1, cap_pages + 1):
+        try:
+            res = gh(f"/search/issues?q={q}&per_page=100&page={page}")
+        except (urllib.error.URLError, urllib.error.HTTPError) as e:
+            print(f"warn: PR search failed (page {page}: {e})", file=sys.stderr)
+            break
+        batch = res.get("items", [])
+        items.extend(batch)
+        if len(batch) < 100:
+            break
+    return items
+
+
 def repo_stars(full: str) -> int:
     """Stargazer count for an owner/name repo (0 on any failure)."""
     try:
@@ -235,15 +259,12 @@ def collect_contributions() -> dict:
     since = (
         datetime.now(timezone.utc) - timedelta(days=WINDOW_DAYS)
     ).strftime("%Y-%m-%d")
-    try:
-        res = gh(
-            f"/search/issues?q=type:pr+author:{USER}+created:>={since}"
-            f"&sort=updated&order=desc&per_page=100"
-        )
-        items = res.get("items", [])
-    except (urllib.error.URLError, urllib.error.HTTPError) as e:
-        print(f"warn: PR search failed ({e})", file=sys.stderr)
-        items = []
+    # is:public keeps private repos out no matter which token runs this, so a
+    # local PAT and the CI token render the same card; pagination lifts the old
+    # 100-PR single-page cap that silently dropped the least-recent months.
+    items = search_issues_all(
+        f"type:pr+author:{USER}+is:public+created:>={since}"
+    )
 
     by_repo: dict[str, dict] = defaultdict(
         lambda: {"merged": 0, "open": 0, "owner": ""}
@@ -656,18 +677,22 @@ def render_svg(projects: list[dict], c: dict) -> str:
         # x-axis: month labels at the start, middle and end of the window
         now_m = datetime.now(timezone.utc)
 
-        def _mlabel(idx: int) -> str:
+        def _mlabel(idx: int, with_year: bool = False) -> str:
             m, y = now_m.month - (len(monthly) - 1 - idx), now_m.year
             while m <= 0:
                 m, y = m + 12, y - 1
-            return calendar.month_abbr[m]
+            lab = calendar.month_abbr[m]
+            return f"{lab} ’{y % 100:02d}" if with_year else lab
 
+        # only the two ends carry a 2-digit year, so the span's year boundary is
+        # legible without cluttering the axis; the midpoint stays a bare month
         axis_y = base + 13
-        for idx, anchor in ((0, "start"), (len(monthly) // 2, "middle"),
-                            (len(monthly) - 1, "end")):
+        for idx, anchor, yr in ((0, "start", True),
+                                (len(monthly) // 2, "middle", False),
+                                (len(monthly) - 1, "end", True)):
             p.append(
                 f'<text x="{pts[idx][0]:.1f}" y="{axis_y}" fill="{MUTED}" '
-                f'font-size="9" text-anchor="{anchor}">{_mlabel(idx)}</text>'
+                f'font-size="9" text-anchor="{anchor}">{_mlabel(idx, yr)}</text>'
             )
 
     # ── provenance, with both timeframes spelled out ─────────────────────────
