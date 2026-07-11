@@ -424,7 +424,6 @@ def render_svg(projects: list[dict], c: dict) -> str:
     # stat row — merged-focused, last year; tight pitch so the group reads
     # as one cluster, with the timeframe tag anchoring the row's right edge
     stats = [
-        (str(c["merged"]), "PRs merged", GREEN, "merge"),
         (str(c["merged_upstream"]), "upstream", PURPLE, "pr"),
         (str(c["merged_projects"]), "OSS projects", BLUE, "repo"),
         (str(c["reviewed"]), "reviewed", CYAN, "review"),
