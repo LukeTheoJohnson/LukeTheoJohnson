@@ -68,6 +68,7 @@ def _env_int(name: str, default: int) -> int:
 
 PROJECT_LIMIT = _env_int("WIDGET_PROJECT_LIMIT", 6)  # own-project cards drawn
 BAR_LIMIT = _env_int("WIDGET_BAR_LIMIT", 6)  # merged-PR repo bars drawn
+CORE_STARS = _env_int("WIDGET_CORE_STARS", 10_000)  # star floor for a "core" project
 
 # ── tokyo-night palette (matches the rest of the profile README) ─────────────
 BG = "#1a1b27"
@@ -262,22 +263,28 @@ def collect_contributions() -> dict:
     def is_external(repo: str) -> bool:
         return by_repo[repo]["owner"].lower() != USER.lower()
 
-    merged_upstream = sum(s["merged"] for r, s in by_repo.items() if is_external(r))
-    merged_projects = sum(
-        1 for r, s in by_repo.items() if is_external(r) and s["merged"]
-    )
+    # merged PRs per external repo, with one star lookup each so we can split
+    # "core" (high-star) projects from the long tail
+    external = {
+        r: s["merged"] for r, s in by_repo.items() if is_external(r) and s["merged"]
+    }
+    stars = {r: repo_stars(r) for r in external}
+
+    merged_upstream = sum(external.values())
+    merged_projects = len(external)
+
+    core = {r: n for r, n in external.items() if stars[r] >= CORE_STARS}
+    core_contributions = sum(core.values())
+    core_projects = len(core)
 
     bars = sorted(
         (
-            {"full": r, "name": r.split("/", 1)[1], "value": s["merged"]}
-            for r, s in by_repo.items()
-            if s["merged"] and is_external(r)
+            {"full": r, "name": r.split("/", 1)[1], "value": n, "stars": stars[r]}
+            for r, n in external.items()
         ),
         key=lambda d: d["value"],
         reverse=True,
     )[:BAR_LIMIT]
-    for b in bars:  # only the few repos we actually draw
-        b["stars"] = repo_stars(b["full"])
 
     # merged PRs bucketed by merge month, oldest → newest, for the sparkline
     monthly = [0] * 12
@@ -299,7 +306,8 @@ def collect_contributions() -> dict:
         "merged": merged,
         "merged_upstream": merged_upstream,
         "merged_projects": merged_projects,
-        "reviewed": search_count(f"type:pr+reviewed-by:{USER}+created:>={since}"),
+        "core_contributions": core_contributions,
+        "core_projects": core_projects,
         "bars": bars,
         "total_prs": len(items),
     }
@@ -421,30 +429,36 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'{today}</text>'
     )
 
-    # stat row — merged-focused, last year; tight pitch so the group reads
-    # as one cluster, with the timeframe tag anchoring the row's right edge
-    stats = [
-        (str(c["merged_upstream"]), "upstream", PURPLE, "pr"),
-        (str(c["merged_projects"]), "OSS projects", BLUE, "repo"),
-        (str(c["reviewed"]), "reviewed", CYAN, "review"),
-    ]
-    sx = 32
-    for value, label, col, ic in stats:
-        p.append(octicon(ic, sx, 86, col, 22))
-        nx = sx + 30  # number sits just right of its icon
-        p.append(
-            f'<text x="{nx}" y="108" fill="{col}" font-size="30" '
-            f'font-weight="700">{escape(value)}</text>'
-        )
-        p.append(
-            f'<text x="{nx+2}" y="126" fill="{MUTED}" font-size="12">'
-            f'{escape(label)}</text>'
-        )
-        sx += 130
+    # key-insight caption — a generated finding, not a totals summary. The
+    # eyebrow + coloured numerals read as one curated statement about the core
+    # (high-star) open-source work; the long tail is left to the merged-PR bars.
     p.append(
-        f'<text x="{W-32}" y="126" fill="{MUTED}" font-size="10.5" '
+        f'<text x="32" y="97" fill="{CYAN}" font-size="11.5" '
+        f'letter-spacing="1.5">✦ KEY INSIGHT</text>'
+    )
+    p.append(
+        f'<text x="{W-32}" y="97" fill="{MUTED}" font-size="10.5" '
         f'text-anchor="end" letter-spacing="1">LAST YEAR</text>'
     )
+    thr = escape(f'{kfmt(CORE_STARS)}+')
+    if c["core_projects"]:
+        insight = (
+            f'<tspan fill="{PURPLE}" font-weight="700">{c["core_contributions"]}'
+            f'</tspan> merged PRs across '
+            f'<tspan fill="{BLUE}" font-weight="700">{c["core_projects"]}</tspan>'
+            f' open-source projects, each with '
+            f'<tspan fill="{ORANGE}" font-weight="700">{thr}</tspan> stars.'
+        )
+    elif c["merged_upstream"]:
+        insight = (
+            f'<tspan fill="{PURPLE}" font-weight="700">{c["merged_upstream"]}'
+            f'</tspan> merged PRs across '
+            f'<tspan fill="{BLUE}" font-weight="700">{c["merged_projects"]}</tspan>'
+            f' open-source projects.'
+        )
+    else:
+        insight = 'Building in the open — first contributions landing soon.'
+    p.append(f'<text x="32" y="128" font-size="19" fill="{FG}">{insight}</text>')
 
     p.append(
         f'<line x1="32" y1="146" x2="{W-32}" y2="146" '
