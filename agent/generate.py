@@ -49,10 +49,8 @@ USER = (
     or os.environ.get("GITHUB_REPOSITORY_OWNER")  # set by GitHub Actions
     or "LukeTheoJohnson"
 )
-NAME = os.environ.get("WIDGET_NAME", "Luke Johnson")
-TAGLINE = os.environ.get(
-    "WIDGET_TAGLINE", "AGENTIC ENGINEERING · MACHINE LEARNING · DATA SCIENCE"
-)
+NAME = os.environ.get("WIDGET_NAME") or USER
+TAGLINE = os.environ.get("WIDGET_TAGLINE", "")
 GH_TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
 OUT = Path(__file__).resolve().parent.parent / "assets" / "widget.svg"
 
@@ -441,10 +439,11 @@ def render_svg(projects: list[dict], c: dict) -> str:
         f'<text x="32" y="50" fill="{FG}" font-size="27" font-weight="700">'
         f'{escape(NAME)}</text>'
     )
-    p.append(
-        f'<text x="{W-32}" y="44" fill="{CYAN}" font-size="13" text-anchor="end" '
-        f'letter-spacing="2">{escape(TAGLINE)}</text>'
-    )
+    if TAGLINE:
+        p.append(
+            f'<text x="{W-32}" y="44" fill="{CYAN}" font-size="13" text-anchor="end" '
+            f'letter-spacing="2">{escape(TAGLINE)}</text>'
+        )
     p.append(
         f'<text x="{W-32}" y="76" fill="{MUTED}" font-size="15" text-anchor="end">'
         f'{today}</text>'

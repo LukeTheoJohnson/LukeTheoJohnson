@@ -30,22 +30,24 @@ jobs:
         run: python agent/generate.py
 
       - name: Commit if changed
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # master is shared (daily schedule + manual pushes), so another commit
-          # can land between checkout and push. Rebuild our commit on the latest
-          # tip and retry, rather than failing the run on a non-fast-forward.
+          # The default branch is shared (daily schedule + manual pushes), so
+          # another commit can land between checkout and push. Rebuild our commit
+          # on the latest tip and retry, rather than failing on a non-fast-forward.
           for i in 1 2 3; do
-            git fetch -q origin master
-            git reset --soft origin/master
+            git fetch -q origin "$DEFAULT_BRANCH"
+            git reset --soft "origin/$DEFAULT_BRANCH"
             git add assets/widget.svg
             if git diff --cached --quiet; then
               echo "no change"
               exit 0
             fi
             git commit -m "chore: refresh profile widget"
-            if git push origin HEAD:master; then
+            if git push origin "HEAD:$DEFAULT_BRANCH"; then
               exit 0
             fi
             echo "push raced, retrying ($i)…"
