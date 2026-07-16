@@ -1,2 +1,0 @@
-# The widget generator uses only the Python standard library (urllib, json).
-# No third-party packages required.
